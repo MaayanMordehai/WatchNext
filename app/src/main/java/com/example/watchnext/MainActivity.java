@@ -1,7 +1,9 @@
 package com.example.watchnext;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 
+import android.app.FragmentManager;
 import android.os.Bundle;
 
 public class MainActivity extends AppCompatActivity {
