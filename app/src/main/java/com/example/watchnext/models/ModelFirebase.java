@@ -1,10 +1,18 @@
 package com.example.watchnext.models;
 
+import com.example.watchnext.models.reviews.Review;
+import com.example.watchnext.models.reviews.ReviewModelFirebase;
+import com.example.watchnext.models.reviews.interfaces.*;
+import com.example.watchnext.models.users.User;
+import com.example.watchnext.models.users.UserModelFirebase;
+import com.example.watchnext.models.users.interfaces.*;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
 public class ModelFirebase {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
+    ReviewModelFirebase reviewFirebase = new ReviewModelFirebase();
+    UserModelFirebase userFirebase = new UserModelFirebase();
 
     public ModelFirebase() {
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
@@ -13,4 +21,27 @@ public class ModelFirebase {
         db.setFirestoreSettings(settings);
     }
 
+    public void getAllReviews(GetAllReviewsListener listener) {
+        reviewFirebase.getAllReviews(listener);
+    }
+
+    public void addReview(AddReviewListener lis, Review r) {
+        reviewFirebase.addReview(lis, r);
+    }
+
+    public void getReviewById(GetReviewListener lis, String id) {
+        reviewFirebase.getReviewById(lis, id);
+    }
+
+    public void getAllUsers(GetAllUsersListener listener) {
+        userFirebase.getAllUsers(listener);
+    }
+
+    public void addUser(AddUserListener lis, User u) {
+        userFirebase.addUser(lis, u);
+    }
+
+    public void getUserById(GetUserListener lis, String id) {
+        userFirebase.getUserById(lis, id);
+    }
 }

@@ -5,6 +5,10 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
 import com.example.watchnext.ContextApplication;
+import com.example.watchnext.models.reviews.Review;
+import com.example.watchnext.models.reviews.ReviewDao;
+import com.example.watchnext.models.users.User;
+import com.example.watchnext.models.users.UserDao;
 
 
 @Database(entities = {Review.class, User.class}, version = 1)

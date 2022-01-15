@@ -1,4 +1,4 @@
-package com.example.watchnext.models;
+package com.example.watchnext.models.users;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -11,6 +11,7 @@ import java.util.Map;
 @Entity
 public class User {
 
+    public static final String COLLECTION_NAME = "users";
     @PrimaryKey
     @NotNull
     private String id;
@@ -32,6 +33,17 @@ public class User {
         this.email = email;
         this.password = password;
         this.imageUrl = imageUrl;
+    }
+
+    public static User create(Map<String, Object> user) {
+        String id = (String) user.get("id");
+        String firstName = (String) user.get("firstName");
+        String lastName = (String) user.get("lastName");
+        String email = (String) user.get("email");
+        String password = (String) user.get("password");
+        String imageUrl = (String) user.get("imageUrl");
+        return new User(id, firstName, lastName, email, password, imageUrl);
+
     }
 
     public Map<String, Object> toMap() {
