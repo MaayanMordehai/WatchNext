@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.example.watchnext.R;
 import com.example.watchnext.validations.InputValidator;
@@ -22,6 +23,7 @@ public class LoginFragment extends Fragment {
     private TextInputLayout passwordTextInput;
     private TextInputEditText passwordEditText;
     private MaterialButton loginButton;
+    private MaterialButton registerButton;
 
     public LoginFragment() {}
 
@@ -29,51 +31,77 @@ public class LoginFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_login, container, false);
+        initializeMembers(view);
+        setListeners();
+        return view;
+    }
+
+    private void initializeMembers(View view) {
         emailTextInput = view.findViewById(R.id.login_fragment_email_text_input);
         emailEditText = view.findViewById(R.id.login_fragment_email_edit_text);
         passwordTextInput = view.findViewById(R.id.login_fragment_password_text_input);
         passwordEditText = view.findViewById(R.id.login_fragment_password_edit_text);
-        loginButton = view.findViewById(R.id.fragment_login_login_button);
-        setLoginButtonOnClickListener(loginButton);
-        setPasswordEditTextOnKeyListener(passwordEditText, passwordTextInput);
-        setEmailEditTextOnKeyListener(emailEditText, emailTextInput);
-        return view;
+        loginButton = view.findViewById(R.id.login_fragment_login_button);
+        registerButton = view.findViewById(R.id.login_fragment_register_button);
     }
 
-    private void setLoginButtonOnClickListener(MaterialButton loginButton) {
+    private void setListeners() {
+        setLoginButtonOnClickListener();
+        setRegisterButtonOnClickListener();
+        setEmailEditTextOnKeyListener();
+        setPasswordEditTextOnKeyListener();
+    }
+
+    private void setLoginButtonOnClickListener() {
         loginButton.setOnClickListener(view -> {
-            setErrorIfPasswordIsNotValid();
-            setErrorIfEmailIsNotValid();
+            if(isFormValid()) {
+                // TODO: Login
+            }
         });
     }
 
-    private void setPasswordEditTextOnKeyListener(TextInputEditText passwordEditText, TextInputLayout passwordTextInput) {
-        passwordEditText.setOnKeyListener((view, i, keyEvent) -> {
-            setErrorIfPasswordIsNotValid();
-            return false;
-        });
+    private boolean isFormValid() {
+        return (setErrorIfEmailIsInvalid() &&
+                setErrorIfPasswordIsInvalid());
     }
 
-    private void setEmailEditTextOnKeyListener(TextInputEditText emailEditText, TextInputLayout emailTextInput) {
+    private void setRegisterButtonOnClickListener() {
+        registerButton.setOnClickListener(
+                Navigation.createNavigateOnClickListener(LoginFragmentDirections.actionLoginFragmentToRegisterFragment())
+        );
+    }
+
+    private void setEmailEditTextOnKeyListener() {
         emailEditText.setOnKeyListener((view, i, keyEvent) -> {
-            setErrorIfEmailIsNotValid();
+            setErrorIfEmailIsInvalid();
             return false;
         });
     }
 
-    private void setErrorIfPasswordIsNotValid() {
-        if (!inputValidator.isPasswordValid(passwordEditText.getText())) {
-            passwordTextInput.setError(getString(R.string.login_password_error));
+    private void setPasswordEditTextOnKeyListener() {
+        passwordEditText.setOnKeyListener((view, i, keyEvent) -> {
+            setErrorIfPasswordIsInvalid();
+            return false;
+        });
+    }
+
+    private boolean setErrorIfEmailIsInvalid() {
+        if (!inputValidator.isEmailValid(emailEditText.getText())) {
+            emailTextInput.setError(getString(R.string.email_invalid));
+            return false;
         } else {
-            passwordTextInput.setError(null);
+            emailTextInput.setError(null);
+            return true;
         }
     }
 
-    public void setErrorIfEmailIsNotValid() {
-        if (!inputValidator.isEmailValid(emailEditText.getText())) {
-            emailTextInput.setError(getString(R.string.login_email_error));
+    private boolean setErrorIfPasswordIsInvalid() {
+        if (!inputValidator.isPasswordValid(passwordEditText.getText())) {
+            passwordTextInput.setError(getString(R.string.password_invalid));
+            return false;
         } else {
-            emailTextInput.setError(null);
+            passwordTextInput.setError(null);
+            return true;
         }
     }
 
