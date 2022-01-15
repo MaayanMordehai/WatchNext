@@ -2,10 +2,15 @@ package com.example.watchnext.models;
 
 import com.example.watchnext.models.reviews.Review;
 import com.example.watchnext.models.reviews.ReviewModelFirebase;
-import com.example.watchnext.models.reviews.interfaces.*;
+import com.example.watchnext.models.reviews.interfaces.AddReviewListener;
+import com.example.watchnext.models.reviews.interfaces.GetAllReviewsListener;
+import com.example.watchnext.models.reviews.interfaces.GetReviewListener;
+import com.example.watchnext.models.reviews.interfaces.UpdateReviewListener;
 import com.example.watchnext.models.users.User;
 import com.example.watchnext.models.users.UserModelFirebase;
-import com.example.watchnext.models.users.interfaces.*;
+import com.example.watchnext.models.users.interfaces.AddUserListener;
+import com.example.watchnext.models.users.interfaces.GetAllUsersListener;
+import com.example.watchnext.models.users.interfaces.GetUserListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 

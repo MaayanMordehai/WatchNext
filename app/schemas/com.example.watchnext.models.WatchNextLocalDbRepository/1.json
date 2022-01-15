@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "6ddccdbdd50d498df582c08e924447a2",
+    "identityHash": "5f7171058d27434dec475c367bce0b09",
     "entities": [
       {
         "tableName": "Review",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `title` TEXT, `description` TEXT, `imageUrl` TEXT, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `title` TEXT, `description` TEXT, `imageUrl` TEXT, `updateDate` INTEGER, `isDeleted` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -31,6 +31,18 @@
             "columnName": "imageUrl",
             "affinity": "TEXT",
             "notNull": false
+          },
+          {
+            "fieldPath": "updateDate",
+            "columnName": "updateDate",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "isDeleted",
+            "columnName": "isDeleted",
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -44,7 +56,7 @@
       },
       {
         "tableName": "User",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `firstName` TEXT, `lastName` TEXT, `email` TEXT, `password` TEXT, `imageUrl` TEXT, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `firstName` TEXT, `lastName` TEXT, `email` TEXT, `password` TEXT, `imageUrl` TEXT, `updateDate` INTEGER, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -81,6 +93,12 @@
             "columnName": "imageUrl",
             "affinity": "TEXT",
             "notNull": false
+          },
+          {
+            "fieldPath": "updateDate",
+            "columnName": "updateDate",
+            "affinity": "INTEGER",
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -96,7 +114,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6ddccdbdd50d498df582c08e924447a2')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5f7171058d27434dec475c367bce0b09')"
     ]
   }
 }

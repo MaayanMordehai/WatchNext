@@ -9,8 +9,8 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.watchnext.models.reviews.Review;
 import com.example.watchnext.models.reviews.interfaces.AddReviewListener;
-import com.example.watchnext.models.reviews.interfaces.UpdateReviewListener;
 import com.example.watchnext.models.reviews.interfaces.GetReviewListener;
+import com.example.watchnext.models.reviews.interfaces.UpdateReviewListener;
 import com.example.watchnext.models.users.User;
 import com.example.watchnext.models.users.interfaces.AddUserListener;
 import com.example.watchnext.models.users.interfaces.GetUserListener;
@@ -50,7 +50,7 @@ public class Model {
 
         modelfirebase.getAllReviews(lastUpdateDate, (reviews) -> {
             executor.execute(() -> {
-                Long lastUpdated = new Long(0);
+                Long lastUpdated = 0L;
                 for (Review r: reviews) {
                     if (lastUpdated < r.getUpdateDate()) {
                         lastUpdated = r.getUpdateDate();
@@ -69,10 +69,10 @@ public class Model {
     }
 
     public LiveData<List<Review>> getAllReviews() {
-        if (this.reviewsList.getValue() == null){
+        if (reviewsList.getValue() == null){
             refreshReviewList();
         }
-        return this.reviewsList;
+        return reviewsList;
     }
 
     public void refreshUserList() {
@@ -82,7 +82,7 @@ public class Model {
 
         modelfirebase.getAllUsers(lastUpdateDate, (users) -> {
             executor.execute(() -> {
-                Long lastUpdated = new Long(0);
+                Long lastUpdated = 0L;
                 for (User u: users) {
                     if (lastUpdated < u.getUpdateDate()) {
                         lastUpdated = u.getUpdateDate();
@@ -98,10 +98,10 @@ public class Model {
     }
 
     public LiveData<List<User>> getAllUsers() {
-        if (this.usersList.getValue() == null) {
+        if (usersList.getValue() == null) {
             refreshUserList();
         }
-        return this.usersList;
+        return usersList;
     }
 
     public void getReviewById(GetReviewListener listener, String id) {

@@ -1,6 +1,9 @@
 package com.example.watchnext.models.reviews;
 
-import com.example.watchnext.models.reviews.interfaces.*;
+import com.example.watchnext.models.reviews.interfaces.AddReviewListener;
+import com.example.watchnext.models.reviews.interfaces.GetAllReviewsListener;
+import com.example.watchnext.models.reviews.interfaces.GetReviewListener;
+import com.example.watchnext.models.reviews.interfaces.UpdateReviewListener;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
