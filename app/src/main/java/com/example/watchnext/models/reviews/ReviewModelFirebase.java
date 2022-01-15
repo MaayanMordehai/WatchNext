@@ -20,7 +20,8 @@ import java.util.List;
 import java.util.Map;
 
 public class ReviewModelFirebase {
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private static FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private static FirebaseStorage storage = FirebaseStorage.getInstance();
 
     public ReviewModelFirebase() {}
 
@@ -71,7 +72,6 @@ public class ReviewModelFirebase {
     }
 
     public static void uploadReviewImage(Bitmap imageBmp, String name, UploadReviewImageListener listener){
-        FirebaseStorage storage = FirebaseStorage.getInstance();
         final StorageReference imagesRef = storage.getReference().child(Review.IMAGE_FOLDER).child(name);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Map;
 
 public class UserModelFirebase {
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
-    FirebaseStorage storage = FirebaseStorage.getInstance();
+    private static FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private static FirebaseStorage storage = FirebaseStorage.getInstance();
 
     public UserModelFirebase() { }
 
@@ -62,7 +62,6 @@ public class UserModelFirebase {
     }
 
     public static void uploadUserImage(Bitmap imageBmp, String name, UploadUserImageListener listener){
-        FirebaseStorage storage = FirebaseStorage.getInstance();
         final StorageReference imagesRef = storage.getReference().child(User.IMAGE_FOLDER).child(name);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
