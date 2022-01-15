@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.guests.LoginFragment">
+    tools:context=".fragments.guests.LoginFragment"
+    android:transitionName="motion">
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"

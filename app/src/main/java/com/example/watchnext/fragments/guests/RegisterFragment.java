@@ -1,23 +1,34 @@
 package com.example.watchnext.fragments.guests;
 
+import static android.app.Activity.RESULT_OK;
+
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
-
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.appcompat.widget.PopupMenu;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
+
 import com.example.watchnext.R;
-import com.example.watchnext.validations.InputValidator;
+import com.example.watchnext.utils.InputValidator;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 public class RegisterFragment extends Fragment {
 
-    private final InputValidator inputValidator = new InputValidator();
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+    static final int REQUEST_OPEN_GALLERY = 2;
 
     private TextInputLayout firstNameTextInput;
     private TextInputEditText firstNameEditText;
@@ -31,6 +42,7 @@ public class RegisterFragment extends Fragment {
     private TextInputEditText confirmPasswordEditText;
     private MaterialButton registerButton;
     private MaterialButton backButton;
+    private ShapeableImageView profileImageView;
 
     public RegisterFragment() {}
 
@@ -56,6 +68,7 @@ public class RegisterFragment extends Fragment {
         confirmPasswordEditText = view.findViewById(R.id.register_fragment_confirm_password_edit_text);
         registerButton = view.findViewById(R.id.register_fragment_register_button);
         backButton = view.findViewById(R.id.register_fragment_back_arrow_button);
+        profileImageView = view.findViewById(R.id.register_fragment_profile_image_view);
     }
 
     private void setListeners() {
@@ -66,6 +79,7 @@ public class RegisterFragment extends Fragment {
         setEmailEditTextOnKeyListener();
         setPasswordEditTextOnKeyListener();
         setConfirmPasswordEditTextOnKeyListener();
+        setProfileImageViewOnClickListener();
     }
 
     private void setRegisterButtonOnClickListener() {
@@ -82,11 +96,17 @@ public class RegisterFragment extends Fragment {
     }
 
     private boolean isFormValid() {
-        return (inputValidator.isFirstNameValid(firstNameEditText.getText()) &&
-                inputValidator.isLastNameValid(lastNameEditText.getText()) &&
-                inputValidator.isEmailValid(emailEditText.getText()) &&
-                inputValidator.isPasswordValid(passwordEditText.getText()) &&
-                inputValidator.isPasswordMatches(passwordEditText.getText(), confirmPasswordEditText.getText()));
+        return (InputValidator.isFirstNameValid(firstNameEditText.getText()) &&
+                InputValidator.isLastNameValid(lastNameEditText.getText()) &&
+                InputValidator.isEmailValid(emailEditText.getText()) &&
+                InputValidator.isPasswordValid(passwordEditText.getText()) &&
+                InputValidator.isPasswordMatches(passwordEditText.getText(), confirmPasswordEditText.getText()));
+    }
+
+    private void setProfileImageViewOnClickListener() {
+        profileImageView.setOnClickListener(view -> {
+            showCameraMenu(view);
+        });
     }
 
     private void setBackButtonOnClickListener() {
@@ -132,7 +152,7 @@ public class RegisterFragment extends Fragment {
     }
 
     private void setErrorIfFirstNameIsInvalid() {
-        if (!inputValidator.isFirstNameValid(firstNameEditText.getText())) {
+        if (!InputValidator.isFirstNameValid(firstNameEditText.getText())) {
             firstNameTextInput.setError(getString(R.string.required_field));
         } else {
             firstNameTextInput.setError(null);
@@ -140,7 +160,7 @@ public class RegisterFragment extends Fragment {
     }
 
     private void setErrorIfLastNameIsInvalid() {
-        if (!inputValidator.isLastNameValid(lastNameEditText.getText())) {
+        if (!InputValidator.isLastNameValid(lastNameEditText.getText())) {
             lastNameTextInput.setError(getString(R.string.required_field));
         } else {
             lastNameTextInput.setError(null);
@@ -148,7 +168,7 @@ public class RegisterFragment extends Fragment {
     }
 
     private void setErrorIfEmailIsInvalid() {
-        if (!inputValidator.isEmailValid(emailEditText.getText())) {
+        if (!InputValidator.isEmailValid(emailEditText.getText())) {
             emailTextInput.setError(getString(R.string.email_invalid));
         } else {
             emailTextInput.setError(null);
@@ -156,7 +176,7 @@ public class RegisterFragment extends Fragment {
     }
 
     private void setErrorIfPasswordIsInvalid() {
-        if (!inputValidator.isPasswordValid(passwordEditText.getText())) {
+        if (!InputValidator.isPasswordValid(passwordEditText.getText())) {
             passwordTextInput.setError(getString(R.string.password_invalid));
         } else {
             passwordTextInput.setError(null);
@@ -164,10 +184,60 @@ public class RegisterFragment extends Fragment {
     }
 
     private void setErrorIfConfirmPasswordIsInvalid() {
-        if (!inputValidator.isPasswordMatches(passwordEditText.getText(), confirmPasswordEditText.getText())) {
+        if (!InputValidator.isPasswordMatches(passwordEditText.getText(), confirmPasswordEditText.getText())) {
             confirmPasswordTextInput.setError(getString(R.string.password_not_match));
         } else {
             confirmPasswordTextInput.setError(null);
+        }
+    }
+
+    public void showCameraMenu(View view) {
+        if (this.getContext() != null) {
+            PopupMenu cameraPopupMenu = new PopupMenu(this.getContext(), view);
+            MenuInflater inflater = cameraPopupMenu.getMenuInflater();
+            inflater.inflate(R.menu.camera_menu, cameraPopupMenu.getMenu());
+            cameraPopupMenu.setOnMenuItemClickListener(this::setOnMenuItemClickListener);
+            cameraPopupMenu.show();
+        }
+    }
+
+    private boolean setOnMenuItemClickListener(MenuItem menuItem) {
+        if (menuItem.getItemId() == R.id.camera_menu_open_camera) {
+            openCamera();
+            return true;
+        } else if (menuItem.getItemId() == R.id.camera_menu_open_gallery) {
+            openGallery();
+            return true;
+        }
+        return false;
+    }
+
+    private void openCamera() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        try {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        } catch (ActivityNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void openGallery() {
+        Intent openGalleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
+        openGalleryIntent.setType("image/*");
+        startActivityForResult(Intent.createChooser(openGalleryIntent, "Select Picture"),REQUEST_OPEN_GALLERY);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            profileImageView.setImageBitmap(imageBitmap);
+        } else if (requestCode == REQUEST_OPEN_GALLERY && resultCode == RESULT_OK) {
+            Uri selectedImageUri = data.getData();
+            if (selectedImageUri != null) {
+                profileImageView.setImageURI(selectedImageUri);
+            }
         }
     }
 

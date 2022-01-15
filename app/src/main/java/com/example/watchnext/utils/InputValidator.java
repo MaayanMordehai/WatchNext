@@ -1,4 +1,4 @@
-package com.example.watchnext.validations;
+package com.example.watchnext.utils;
 
 import android.text.Editable;
 import android.util.Patterns;
@@ -10,27 +10,27 @@ public class InputValidator {
     public InputValidator() {
     }
 
-    public boolean isFirstNameValid(@Nullable Editable text) {
+    public static boolean isFirstNameValid(@Nullable Editable text) {
         return !isFieldEmpty(text);
     }
 
-    public boolean isLastNameValid(@Nullable Editable text) {
+    public static boolean isLastNameValid(@Nullable Editable text) {
         return !isFieldEmpty(text);
     }
 
-    public boolean isPasswordValid(@Nullable Editable text) {
+    public static boolean isPasswordValid(@Nullable Editable text) {
         return (text != null && text.length() >= 8);
     }
 
-    public boolean isEmailValid(@Nullable Editable text) {
+    public static boolean isEmailValid(@Nullable Editable text) {
         return (text != null && Patterns.EMAIL_ADDRESS.matcher(text).matches());
     }
 
-    private boolean isFieldEmpty(@Nullable Editable text) {
+    private static boolean isFieldEmpty(@Nullable Editable text) {
         return (text == null || text.length() == 0);
     }
 
-    public boolean isPasswordMatches(@Nullable Editable password, @Nullable Editable confirmPassword) {
+    public static boolean isPasswordMatches(@Nullable Editable password, @Nullable Editable confirmPassword) {
         return (password != null &&
                 confirmPassword != null &&
                 isPasswordValid(confirmPassword) &&

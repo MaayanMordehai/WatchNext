@@ -9,14 +9,12 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.example.watchnext.R;
-import com.example.watchnext.validations.InputValidator;
+import com.example.watchnext.utils.InputValidator;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 public class LoginFragment extends Fragment {
-
-    private final InputValidator inputValidator = new InputValidator();
 
     private TextInputLayout emailTextInput;
     private TextInputEditText emailEditText;
@@ -88,7 +86,7 @@ public class LoginFragment extends Fragment {
     }
 
     private boolean setErrorIfEmailIsInvalid() {
-        if (!inputValidator.isEmailValid(emailEditText.getText())) {
+        if (!InputValidator.isEmailValid(emailEditText.getText())) {
             emailTextInput.setError(getString(R.string.email_invalid));
             return false;
         } else {
@@ -98,7 +96,7 @@ public class LoginFragment extends Fragment {
     }
 
     private boolean setErrorIfPasswordIsInvalid() {
-        if (!inputValidator.isPasswordValid(passwordEditText.getText())) {
+        if (!InputValidator.isPasswordValid(passwordEditText.getText())) {
             passwordTextInput.setError(getString(R.string.password_invalid));
             return false;
         } else {
