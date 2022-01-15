@@ -1,9 +1,11 @@
-package com.example.watchnext.models.users;
+package com.example.watchnext.models.room.daos;
 
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+
+import com.example.watchnext.models.entities.User;
 
 import java.util.List;
 
@@ -18,4 +20,5 @@ public interface UserDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(User... users);
+
 }

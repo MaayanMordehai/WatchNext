@@ -1,4 +1,4 @@
-package com.example.watchnext.models.reviews;
+package com.example.watchnext.models.entities;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -11,18 +11,17 @@ import com.example.watchnext.ContextApplication;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.FieldValue;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Entity
 public class Review {
-    public static final String COLLECTION_NAME = "reviews";
+
     public static final String LAST_UPDATED = "ReviewLastUpdated";
-    public static final String IMAGE_FOLDER = "reviews";
+
     @PrimaryKey
-    @NotNull
+    @NonNull
     private String id;
     private String title;
     private String description;
@@ -30,26 +29,29 @@ public class Review {
     private Long updateDate;
     private boolean isDeleted;
 
-    public Review(@NonNull String id, String title, String description) {
+    public Review(@NonNull String id,
+                  String title,
+                  String description,
+                  String imageUrl,
+                  Long updateDate,
+                  boolean isDeleted) {
         this.id = id;
         this.title = title;
         this.description = description;
-        this.isDeleted = false;
+        this.imageUrl = imageUrl;
+        this.updateDate = updateDate;
+        this.isDeleted = isDeleted;
     }
 
     public static Review create(Map<String, Object> json) {
-        String id = (String) json.get("id");
-        String title = (String) json.get("title");
-        String description = (String) json.get("description");
-        Timestamp ts = (Timestamp)json.get("updateDate");
-        Review review = new Review(id, title, description);
-        if (ts != null) {
-            Long updateDate = ts.getSeconds();
-            review.setUpdateDate(updateDate);
-        }
-        review.setImageUrl((String) json.get("imageUrl"));
-        review.setDeleted((boolean) json.get("isDeleted"));
-        return review;
+        String id = Objects.requireNonNull(json.get("id")).toString();
+        String title = Objects.requireNonNull(json.get("title")).toString();
+        String description = Objects.requireNonNull(json.get("description")).toString();
+        String imageUrl = Objects.requireNonNull(json.get("imageUrl")).toString();
+        Timestamp ts = (Timestamp) Objects.requireNonNull(json.get("updateDate"));
+        Long updateDate = ts.getSeconds();
+        boolean isDeleted = (boolean) Objects.requireNonNull(json.get("isDeleted"));
+        return new Review(id, title, description, imageUrl, updateDate, isDeleted);
     }
 
     public Map<String, Object> toMap() {
@@ -123,4 +125,5 @@ public class Review {
                 .getContext().getSharedPreferences("TAG", Context.MODE_PRIVATE);
         return sp.getLong(Review.LAST_UPDATED, 0);
     }
+
 }

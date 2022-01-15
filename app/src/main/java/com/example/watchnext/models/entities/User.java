@@ -1,4 +1,4 @@
-package com.example.watchnext.models.users;
+package com.example.watchnext.models.entities;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -11,19 +11,17 @@ import com.example.watchnext.ContextApplication;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.FieldValue;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Entity
 public class User {
 
-    public static final String COLLECTION_NAME = "users";
     public static final String LAST_UPDATED = "UserLastUpdated";
-    public static final String IMAGE_FOLDER = "users";
+
     @PrimaryKey
-    @NotNull
+    @NonNull
     private String id;
     private String firstName;
     private String lastName;
@@ -32,32 +30,32 @@ public class User {
     private String imageUrl;
     private Long updateDate;
 
-    public User(String id,
+    public User(@NonNull String id,
                 String firstName,
                 String lastName,
                 String email,
-                String password) {
+                String password,
+                String imageUrl,
+                Long updateDate) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
+        this.imageUrl = imageUrl;
+        this.updateDate = updateDate;
     }
 
     public static User create(Map<String, Object> user) {
-        String id = (String) user.get("id");
-        String firstName = (String) user.get("firstName");
-        String lastName = (String) user.get("lastName");
-        String email = (String) user.get("email");
-        String password = (String) user.get("password");
-        Timestamp ts = (Timestamp)user.get("updateDate");
-        User neUser = new User(id, firstName, lastName, email, password);
-        if (ts != null) {
-            Long updateDate = ts.getSeconds();
-            neUser.setUpdateDate(updateDate);
-        }
-        neUser.setImageUrl((String) user.get("ImageUrl"));
-        return neUser;
+        String id = Objects.requireNonNull(user.get("id")).toString();
+        String firstName = Objects.requireNonNull(user.get("firstName")).toString();
+        String lastName = Objects.requireNonNull(user.get("lastName")).toString();
+        String email = Objects.requireNonNull(user.get("email")).toString();
+        String password = Objects.requireNonNull(user.get("password")).toString();
+        String imageUrl = Objects.requireNonNull(user.get("imageUrl")).toString();
+        Timestamp ts = (Timestamp) Objects.requireNonNull(user.get("updateDate"));
+        Long updateDate = ts.getSeconds();
+        return new User(id, firstName, lastName, email, password, imageUrl, updateDate);
     }
 
     public Map<String, Object> toMap() {

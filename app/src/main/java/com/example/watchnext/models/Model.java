@@ -8,48 +8,55 @@ import androidx.core.os.HandlerCompat;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.watchnext.models.reviews.Review;
-import com.example.watchnext.models.reviews.interfaces.AddReviewListener;
-import com.example.watchnext.models.reviews.interfaces.GetReviewListener;
-import com.example.watchnext.models.reviews.interfaces.UpdateReviewListener;
-import com.example.watchnext.models.reviews.interfaces.UploadReviewImageListener;
-import com.example.watchnext.models.users.User;
-import com.example.watchnext.models.users.interfaces.AddUserListener;
-import com.example.watchnext.models.users.interfaces.GetUserListener;
-import com.example.watchnext.models.users.interfaces.UploadUserImageListener;
+import com.example.watchnext.enums.LoadingStateEnum;
+import com.example.watchnext.models.entities.Review;
+import com.example.watchnext.models.entities.User;
+import com.example.watchnext.models.firebase.AuthFirebase;
+import com.example.watchnext.models.firebase.ModelFirebase;
+import com.example.watchnext.models.firebase.reviews.interfaces.AddReviewListener;
+import com.example.watchnext.models.firebase.reviews.interfaces.GetReviewListener;
+import com.example.watchnext.models.firebase.reviews.interfaces.UpdateReviewListener;
+import com.example.watchnext.models.firebase.reviews.interfaces.UploadReviewImageListener;
+import com.example.watchnext.models.firebase.users.interfaces.AddUserListener;
+import com.example.watchnext.models.firebase.users.interfaces.GetUserListener;
+import com.example.watchnext.models.firebase.users.interfaces.UploadUserImageListener;
+import com.example.watchnext.models.room.WatchNextLocalDb;
 
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class Model {
+
     public static final Model instance = new Model();
-    private static final Executor executor = Executors.newFixedThreadPool(1);
-    private static final Handler mainThread = HandlerCompat.createAsync(Looper.getMainLooper());
-    private static final ModelFirebase modelfirebase = new ModelFirebase();
-    private static final MutableLiveData<List<Review>> reviewsList = new MutableLiveData<List<Review>>();
-    private static final MutableLiveData<List<User>> usersList = new MutableLiveData<List<User>>();
-    private static final MutableLiveData<LoadingState> reviewListLoadingState = new MutableLiveData<LoadingState>();
-    private static final MutableLiveData<LoadingState> userListLoadingState = new MutableLiveData<LoadingState>();
-    public enum LoadingState {
-        loading,
-        loaded
-    }
+    public final Executor executor = Executors.newFixedThreadPool(1);
+    public final Handler mainThread = HandlerCompat.createAsync(Looper.getMainLooper());
 
-    private Model() {
-    }
+    private final ModelFirebase modelfirebase = new ModelFirebase();
+    private final AuthFirebase authFirebase = new AuthFirebase();
+    private final MutableLiveData<List<Review>> reviewsList = new MutableLiveData<>();
+    private final MutableLiveData<List<User>> usersList = new MutableLiveData<>();
+    private final MutableLiveData<LoadingStateEnum> reviewListLoadingState = new MutableLiveData<>();
+    private final MutableLiveData<LoadingStateEnum> userListLoadingState = new MutableLiveData<>();
 
-    public static MutableLiveData<LoadingState> getReviewListLoadingState() {
+    private Model() {}
+
+    public MutableLiveData<LoadingStateEnum> getReviewListLoadingState() {
         return reviewListLoadingState;
     }
 
-    public static MutableLiveData<LoadingState> getUserListLoadingState() {
+    public MutableLiveData<LoadingStateEnum> getUserListLoadingState() {
         return userListLoadingState;
     }
 
     public void refreshReviewList() {
-        reviewListLoadingState.setValue(LoadingState.loading);
+        reviewListLoadingState.setValue(LoadingStateEnum.loading);
         Long lastUpdateDate = Review.getLocalLastUpdated();
+
+        executor.execute(() -> {
+            List<Review> reviewList = WatchNextLocalDb.db.reviewDao().getAll();
+            reviewsList.postValue(reviewList);
+        });
 
         modelfirebase.getAllReviews(lastUpdateDate, (reviews) -> {
             executor.execute(() -> {
@@ -66,7 +73,7 @@ public class Model {
                 Review.setLocalLastUpdated(lastUpdated);
                 List<Review> rwList = WatchNextLocalDb.db.reviewDao().getAll();
                 reviewsList.postValue(rwList);
-                reviewListLoadingState.postValue(LoadingState.loaded);
+                reviewListLoadingState.postValue(LoadingStateEnum.loaded);
             });
         });
     }
@@ -79,9 +86,13 @@ public class Model {
     }
 
     public void refreshUserList() {
-        userListLoadingState.setValue(LoadingState.loading);
-        // Get last local update date
+        userListLoadingState.setValue(LoadingStateEnum.loading);
         Long lastUpdateDate = Review.getLocalLastUpdated();
+
+        executor.execute(() -> {
+            List<User> userList = WatchNextLocalDb.db.userDao().getAll();
+            usersList.postValue(userList);
+        });
 
         modelfirebase.getAllUsers(lastUpdateDate, (users) -> {
             executor.execute(() -> {
@@ -95,7 +106,7 @@ public class Model {
                 Review.setLocalLastUpdated(lastUpdated);
                 List<Review> rwList = WatchNextLocalDb.db.reviewDao().getAll();
                 reviewsList.postValue(rwList);
-                reviewListLoadingState.postValue(LoadingState.loaded);
+                reviewListLoadingState.postValue(LoadingStateEnum.loaded);
             });
         });
     }
@@ -139,4 +150,9 @@ public class Model {
     public void uploadUserImage(Bitmap imageBmp, String name, UploadUserImageListener listener) {
         modelfirebase.uploadUserImage(imageBmp, name, listener);
     }
+
+    public boolean isSignedIn() {
+        return authFirebase.isSignedIn();
+    }
+
 }
