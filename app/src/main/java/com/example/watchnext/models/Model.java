@@ -1,5 +1,6 @@
 package com.example.watchnext.models;
 
+import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -11,9 +12,11 @@ import com.example.watchnext.models.reviews.Review;
 import com.example.watchnext.models.reviews.interfaces.AddReviewListener;
 import com.example.watchnext.models.reviews.interfaces.GetReviewListener;
 import com.example.watchnext.models.reviews.interfaces.UpdateReviewListener;
+import com.example.watchnext.models.reviews.interfaces.UploadReviewImageListener;
 import com.example.watchnext.models.users.User;
 import com.example.watchnext.models.users.interfaces.AddUserListener;
 import com.example.watchnext.models.users.interfaces.GetUserListener;
+import com.example.watchnext.models.users.interfaces.UploadUserImageListener;
 
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -129,4 +132,11 @@ public class Model {
         modelfirebase.updateReview(lis, r);
     }
 
+    public void uploadReviewImage(Bitmap imageBmp, String name, UploadReviewImageListener listener) {
+        modelfirebase.uploadReviewImage(imageBmp, name, listener);
+    }
+
+    public void uploadUserImage(Bitmap imageBmp, String name, UploadUserImageListener listener) {
+        modelfirebase.uploadUserImage(imageBmp, name, listener);
+    }
 }
