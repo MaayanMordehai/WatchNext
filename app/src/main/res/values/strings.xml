@@ -1,10 +1,21 @@
 <resources>
     <string name="app_name">WatchNext</string>
-    <string name="login_email_hint">Email</string>
-    <string name="login_password_hint">Password</string>
-    <string name="login_button_login">Login</string>
-    <string name="login_refer_to_register_page">Don\'t have an account?</string>
-    <string name="login_register_link_text">Register</string>
-    <string name="login_password_error">Password must be at least 8 characters</string>
-    <string name="login_email_error">Not an email format</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
+    <string name="confirm_password_hint">Confirm Password</string>
+    <string name="first_name_hint">First Name</string>
+    <string name="last_name_hint">Last Name</string>
+    <string name="login">Login</string>
+    <string name="refer_to_register_page_text">Don\'t have an account?</string>
+    <string name="register">Register</string>
+    <string name="password_invalid">Password must be at least 8 characters</string>
+    <string name="email_invalid">Not an email format</string>
+    <string name="back">Back</string>
+    <string name="register_title">Register</string>
+    <string name="required_field">Required field</string>
+    <string name="password_not_match">Password and Confirm password do not match</string>
+    <string name="open_gallery">Open Gallery</string>
+    <string name="open_camera">Open Camera</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
