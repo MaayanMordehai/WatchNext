@@ -21,6 +21,7 @@ public class User {
 
     public static final String COLLECTION_NAME = "users";
     public static final String LAST_UPDATED = "UserLastUpdated";
+    public static final String IMAGE_FOLDER = "users";
     @PrimaryKey
     @NotNull
     private String id;
@@ -35,14 +36,12 @@ public class User {
                 String firstName,
                 String lastName,
                 String email,
-                String password,
-                String imageUrl) {
+                String password) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
-        this.imageUrl = imageUrl;
     }
 
     public static User create(Map<String, Object> user) {
@@ -51,13 +50,13 @@ public class User {
         String lastName = (String) user.get("lastName");
         String email = (String) user.get("email");
         String password = (String) user.get("password");
-        String imageUrl = (String) user.get("imageUrl");
         Timestamp ts = (Timestamp)user.get("updateDate");
-        User neUser = new User(id, firstName, lastName, email, password, imageUrl);
+        User neUser = new User(id, firstName, lastName, email, password);
         if (ts != null) {
             Long updateDate = ts.getSeconds();
             neUser.setUpdateDate(updateDate);
         }
+        neUser.setImageUrl((String) user.get("ImageUrl"));
         return neUser;
     }
 

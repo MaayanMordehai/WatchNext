@@ -1,18 +1,26 @@
 package com.example.watchnext.models.users;
 
+import android.graphics.Bitmap;
+
 import com.example.watchnext.models.users.interfaces.AddUserListener;
 import com.example.watchnext.models.users.interfaces.GetAllUsersListener;
 import com.example.watchnext.models.users.interfaces.GetUserListener;
+import com.example.watchnext.models.users.interfaces.UploadUserImageListener;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 public class UserModelFirebase {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseStorage storage = FirebaseStorage.getInstance();
 
     public UserModelFirebase() { }
 
@@ -52,4 +60,19 @@ public class UserModelFirebase {
                     lis.onComplete(u);
                 });
     }
+
+    public static void uploadUserImage(Bitmap imageBmp, String name, UploadUserImageListener listener){
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        final StorageReference imagesRef = storage.getReference().child(User.IMAGE_FOLDER).child(name);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        imageBmp.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+        UploadTask uploadTask = imagesRef.putBytes(data);
+        uploadTask.addOnFailureListener(exception -> listener.onComplete(null))
+                .addOnSuccessListener(taskSnapshot -> imagesRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                    listener.onComplete(uri.toString());
+                }));
+    };
 }

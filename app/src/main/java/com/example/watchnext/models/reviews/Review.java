@@ -20,6 +20,7 @@ import java.util.Map;
 public class Review {
     public static final String COLLECTION_NAME = "reviews";
     public static final String LAST_UPDATED = "ReviewLastUpdated";
+    public static final String IMAGE_FOLDER = "reviews";
     @PrimaryKey
     @NotNull
     private String id;
@@ -29,11 +30,10 @@ public class Review {
     private Long updateDate;
     private boolean isDeleted;
 
-    public Review(@NonNull String id, String title, String description, String imageUrl) {
+    public Review(@NonNull String id, String title, String description) {
         this.id = id;
         this.title = title;
         this.description = description;
-        this.imageUrl = imageUrl;
         this.isDeleted = false;
     }
 
@@ -41,13 +41,13 @@ public class Review {
         String id = (String) json.get("id");
         String title = (String) json.get("title");
         String description = (String) json.get("description");
-        String imageUrl = (String)json.get("imageUrl");
         Timestamp ts = (Timestamp)json.get("updateDate");
-        Review review = new Review(id, title, description, imageUrl);
+        Review review = new Review(id, title, description);
         if (ts != null) {
             Long updateDate = ts.getSeconds();
             review.setUpdateDate(updateDate);
         }
+        review.setImageUrl((String) json.get("imageUrl"));
         review.setDeleted((boolean) json.get("isDeleted"));
         return review;
     }

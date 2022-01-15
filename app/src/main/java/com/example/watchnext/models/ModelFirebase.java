@@ -1,16 +1,20 @@
 package com.example.watchnext.models;
 
+import android.graphics.Bitmap;
+
 import com.example.watchnext.models.reviews.Review;
 import com.example.watchnext.models.reviews.ReviewModelFirebase;
 import com.example.watchnext.models.reviews.interfaces.AddReviewListener;
 import com.example.watchnext.models.reviews.interfaces.GetAllReviewsListener;
 import com.example.watchnext.models.reviews.interfaces.GetReviewListener;
 import com.example.watchnext.models.reviews.interfaces.UpdateReviewListener;
+import com.example.watchnext.models.reviews.interfaces.UploadReviewImageListener;
 import com.example.watchnext.models.users.User;
 import com.example.watchnext.models.users.UserModelFirebase;
 import com.example.watchnext.models.users.interfaces.AddUserListener;
 import com.example.watchnext.models.users.interfaces.GetAllUsersListener;
 import com.example.watchnext.models.users.interfaces.GetUserListener;
+import com.example.watchnext.models.users.interfaces.UploadUserImageListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
@@ -52,5 +56,13 @@ public class ModelFirebase {
 
     public void getUserById(GetUserListener lis, String id) {
         userFirebase.getUserById(lis, id);
+    }
+
+    public void uploadUserImage(Bitmap imageBmp, String name, UploadUserImageListener listener) {
+        userFirebase.uploadUserImage(imageBmp, name, listener);
+    }
+
+    public void uploadReviewImage(Bitmap imageBmp, String name, UploadReviewImageListener listener) {
+        reviewFirebase.uploadReviewImage(imageBmp, name, listener);
     }
 }
