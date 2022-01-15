@@ -54,6 +54,8 @@ public class LoginFragment extends Fragment {
 
     private void setLoginButtonOnClickListener() {
         loginButton.setOnClickListener(view -> {
+            setErrorIfEmailIsInvalid();
+            setErrorIfPasswordIsInvalid();
             if(isFormValid()) {
                 // TODO: Login
             }

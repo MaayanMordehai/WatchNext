@@ -76,7 +76,7 @@ public class RegisterFragment extends Fragment {
             setErrorIfPasswordIsInvalid();
             setErrorIfConfirmPasswordIsInvalid();
             if(isFormValid()) {
-                Navigation.findNavController(view).navigateUp();
+                Navigation.findNavController(view).navigate(RegisterFragmentDirections.actionRegisterFragmentToLoginFragment());
             }
         });
     }
@@ -91,7 +91,7 @@ public class RegisterFragment extends Fragment {
 
     private void setBackButtonOnClickListener() {
         backButton.setOnClickListener(view -> {
-            Navigation.findNavController(view).navigateUp();
+            Navigation.findNavController(view).navigate(RegisterFragmentDirections.actionRegisterFragmentToLoginFragment());
         });
     }
 
