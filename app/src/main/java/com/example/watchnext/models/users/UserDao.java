@@ -6,6 +6,7 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
+import com.example.watchnext.models.reviews.Review;
 import com.example.watchnext.models.users.User;
 
 import java.util.List;
@@ -20,8 +21,5 @@ public interface UserDao {
     User getById(String userId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void upsert(User user);
-
-    @Delete
-    void delete(User user);
+    void insertAll(User... users);
 }

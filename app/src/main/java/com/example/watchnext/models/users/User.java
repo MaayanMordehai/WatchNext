@@ -1,7 +1,15 @@
 package com.example.watchnext.models.users;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+
+import com.example.watchnext.ContextApplication;
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.FieldValue;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -12,6 +20,7 @@ import java.util.Map;
 public class User {
 
     public static final String COLLECTION_NAME = "users";
+    public static final String LAST_UPDATED = "UserLastUpdated";
     @PrimaryKey
     @NotNull
     private String id;
@@ -20,6 +29,7 @@ public class User {
     private String email;
     private String password;
     private String imageUrl;
+    private Long updateDate;
 
     public User(String id,
                 String firstName,
@@ -42,8 +52,13 @@ public class User {
         String email = (String) user.get("email");
         String password = (String) user.get("password");
         String imageUrl = (String) user.get("imageUrl");
-        return new User(id, firstName, lastName, email, password, imageUrl);
-
+        Timestamp ts = (Timestamp)user.get("updateDate");
+        User neUser = new User(id, firstName, lastName, email, password, imageUrl);
+        if (ts != null) {
+            Long updateDate = ts.getSeconds();
+            neUser.setUpdateDate(updateDate);
+        }
+        return neUser;
     }
 
     public Map<String, Object> toMap() {
@@ -54,14 +69,16 @@ public class User {
         result.put("email", email);
         result.put("password", password);
         result.put("imageUrl", imageUrl);
+        result.put("updateDate", FieldValue.serverTimestamp());
         return result;
     }
 
+    @NonNull
     public String getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(@NonNull String id) {
         this.id = id;
     }
 
@@ -103,5 +120,25 @@ public class User {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public Long getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(Long updateDate) {
+        this.updateDate = updateDate;
+    }
+
+    public static void setLocalLastUpdated(Long timestamp) {
+        SharedPreferences.Editor ed = ContextApplication.getContext().getSharedPreferences("TAG", Context.MODE_PRIVATE).edit();
+        ed.putLong(User.LAST_UPDATED, timestamp);
+        ed.apply();
+    }
+
+    public static Long getLocalLastUpdated() {
+        SharedPreferences sp = ContextApplication
+                .getContext().getSharedPreferences("TAG", Context.MODE_PRIVATE);
+        return sp.getLong(User.LAST_UPDATED, 0);
     }
 }

@@ -21,20 +21,24 @@ public class ModelFirebase {
         db.setFirestoreSettings(settings);
     }
 
-    public void getAllReviews(GetAllReviewsListener listener) {
-        reviewFirebase.getAllReviews(listener);
+    public void getAllReviews(Long since, GetAllReviewsListener listener) {
+        reviewFirebase.getAllReviews(since, listener);
     }
 
     public void addReview(AddReviewListener lis, Review r) {
         reviewFirebase.addReview(lis, r);
     }
 
+    public void updateReview(UpdateReviewListener lis, Review r) {
+        reviewFirebase.updateReview(lis, r);
+    }
+
     public void getReviewById(GetReviewListener lis, String id) {
         reviewFirebase.getReviewById(lis, id);
     }
 
-    public void getAllUsers(GetAllUsersListener listener) {
-        userFirebase.getAllUsers(listener);
+    public void getAllUsers(Long since, GetAllUsersListener listener) {
+        userFirebase.getAllUsers(since, listener);
     }
 
     public void addUser(AddUserListener lis, User u) {

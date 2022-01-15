@@ -1,6 +1,9 @@
 package com.example.watchnext.models.users;
 
-import com.example.watchnext.models.users.interfaces.*;
+import com.example.watchnext.models.users.interfaces.AddUserListener;
+import com.example.watchnext.models.users.interfaces.GetAllUsersListener;
+import com.example.watchnext.models.users.interfaces.GetUserListener;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -13,17 +16,15 @@ public class UserModelFirebase {
 
     public UserModelFirebase() { }
 
-    public void getAllUsers(GetAllUsersListener listener) {
+    public void getAllUsers(long since, GetAllUsersListener listener) {
         db.collection(User.COLLECTION_NAME)
+                .whereGreaterThanOrEqualTo(User.LAST_UPDATED, new Timestamp(since, 0))
                 .get()
                 .addOnCompleteListener(task -> {
                     List<User> list = new LinkedList<>();
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot doc : task.getResult()) {
-                            User u = User.create(doc.getData());
-                            if (u != null) {
-                                list.add(u);
-                            }
+                            list.add(User.create(doc.getData()));
                         }
                     }
                     listener.onComplete(list);
