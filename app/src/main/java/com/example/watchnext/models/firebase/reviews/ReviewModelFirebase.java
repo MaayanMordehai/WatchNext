@@ -1,12 +1,13 @@
-package com.example.watchnext.models.reviews;
+package com.example.watchnext.models.firebase.reviews;
 
 import android.graphics.Bitmap;
 
-import com.example.watchnext.models.reviews.interfaces.AddReviewListener;
-import com.example.watchnext.models.reviews.interfaces.GetAllReviewsListener;
-import com.example.watchnext.models.reviews.interfaces.GetReviewListener;
-import com.example.watchnext.models.reviews.interfaces.UpdateReviewListener;
-import com.example.watchnext.models.reviews.interfaces.UploadReviewImageListener;
+import com.example.watchnext.models.entities.Review;
+import com.example.watchnext.models.firebase.reviews.interfaces.AddReviewListener;
+import com.example.watchnext.models.firebase.reviews.interfaces.GetAllReviewsListener;
+import com.example.watchnext.models.firebase.reviews.interfaces.GetReviewListener;
+import com.example.watchnext.models.firebase.reviews.interfaces.UpdateReviewListener;
+import com.example.watchnext.models.firebase.reviews.interfaces.UploadReviewImageListener;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -20,13 +21,18 @@ import java.util.List;
 import java.util.Map;
 
 public class ReviewModelFirebase {
-    private static FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private static FirebaseStorage storage = FirebaseStorage.getInstance();
 
-    public ReviewModelFirebase() {}
+    public static final String IMAGE_FOLDER = "reviews";
+    public static final String COLLECTION_NAME = "reviews";
+
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final FirebaseStorage storage = FirebaseStorage.getInstance();
+
+    public ReviewModelFirebase() {
+    }
 
     public void getAllReviews(long since, GetAllReviewsListener listener) {
-        db.collection(Review.COLLECTION_NAME)
+        db.collection(COLLECTION_NAME)
                 .whereGreaterThanOrEqualTo(Review.LAST_UPDATED, new Timestamp(since, 0))
                 .get()
                 .addOnCompleteListener(task -> {
@@ -42,7 +48,7 @@ public class ReviewModelFirebase {
 
     public void addReview(AddReviewListener lis, Review r) {
         Map<String, Object> jsonReview = r.toMap();
-        db.collection(Review.COLLECTION_NAME)
+        db.collection(COLLECTION_NAME)
                 .document(r.getId())
                 .set(jsonReview)
                 .addOnSuccessListener(unused -> lis.onComplete())
@@ -51,7 +57,7 @@ public class ReviewModelFirebase {
 
     public void updateReview(UpdateReviewListener lis, Review r) {
         Map<String, Object> jsonReview = r.toMap();
-        db.collection(Review.COLLECTION_NAME)
+        db.collection(COLLECTION_NAME)
                 .document(r.getId())
                 .update(jsonReview)
                 .addOnSuccessListener(unused -> lis.onComplete())
@@ -59,20 +65,22 @@ public class ReviewModelFirebase {
     }
 
     public void getReviewById(GetReviewListener lis, String id) {
-        db.collection(Review.COLLECTION_NAME)
+        db.collection(COLLECTION_NAME)
                 .document(id)
                 .get()
-                .addOnCompleteListener( task -> {
+                .addOnCompleteListener(task -> {
                     Review r = null;
-                    if (task.isSuccessful() & task.getResult() != null) {
+                    if ((task.isSuccessful()) &&
+                        (task.getResult() != null) &&
+                        (task.getResult().getData() != null)) {
                         r = Review.create(task.getResult().getData());
                     }
                     lis.onComplete(r);
                 });
     }
 
-    public static void uploadReviewImage(Bitmap imageBmp, String name, UploadReviewImageListener listener){
-        final StorageReference imagesRef = storage.getReference().child(Review.IMAGE_FOLDER).child(name);
+    public void uploadReviewImage(Bitmap imageBmp, String name, UploadReviewImageListener listener) {
+        final StorageReference imagesRef = storage.getReference().child(IMAGE_FOLDER).child(name);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         imageBmp.compress(Bitmap.CompressFormat.JPEG, 100, baos);
@@ -83,5 +91,6 @@ public class ReviewModelFirebase {
                 .addOnSuccessListener(taskSnapshot -> imagesRef.getDownloadUrl().addOnSuccessListener(uri -> {
                     listener.onComplete(uri.toString());
                 }));
-    };
+    }
+
 }

@@ -1,32 +1,33 @@
-package com.example.watchnext.models;
+package com.example.watchnext.models.firebase;
 
 import android.graphics.Bitmap;
 
-import com.example.watchnext.models.reviews.Review;
-import com.example.watchnext.models.reviews.ReviewModelFirebase;
-import com.example.watchnext.models.reviews.interfaces.AddReviewListener;
-import com.example.watchnext.models.reviews.interfaces.GetAllReviewsListener;
-import com.example.watchnext.models.reviews.interfaces.GetReviewListener;
-import com.example.watchnext.models.reviews.interfaces.UpdateReviewListener;
-import com.example.watchnext.models.reviews.interfaces.UploadReviewImageListener;
-import com.example.watchnext.models.users.User;
-import com.example.watchnext.models.users.UserModelFirebase;
-import com.example.watchnext.models.users.interfaces.AddUserListener;
-import com.example.watchnext.models.users.interfaces.GetAllUsersListener;
-import com.example.watchnext.models.users.interfaces.GetUserListener;
-import com.example.watchnext.models.users.interfaces.UploadUserImageListener;
+import com.example.watchnext.models.entities.Review;
+import com.example.watchnext.models.firebase.reviews.ReviewModelFirebase;
+import com.example.watchnext.models.firebase.reviews.interfaces.AddReviewListener;
+import com.example.watchnext.models.firebase.reviews.interfaces.GetAllReviewsListener;
+import com.example.watchnext.models.firebase.reviews.interfaces.GetReviewListener;
+import com.example.watchnext.models.firebase.reviews.interfaces.UpdateReviewListener;
+import com.example.watchnext.models.firebase.reviews.interfaces.UploadReviewImageListener;
+import com.example.watchnext.models.entities.User;
+import com.example.watchnext.models.firebase.users.UserModelFirebase;
+import com.example.watchnext.models.firebase.users.interfaces.AddUserListener;
+import com.example.watchnext.models.firebase.users.interfaces.GetAllUsersListener;
+import com.example.watchnext.models.firebase.users.interfaces.GetUserListener;
+import com.example.watchnext.models.firebase.users.interfaces.UploadUserImageListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
 public class ModelFirebase {
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
-    ReviewModelFirebase reviewFirebase = new ReviewModelFirebase();
-    UserModelFirebase userFirebase = new UserModelFirebase();
+
+    private final ReviewModelFirebase reviewFirebase = new ReviewModelFirebase();
+    private final UserModelFirebase userFirebase = new UserModelFirebase();
 
     public ModelFirebase() {
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
                 .setPersistenceEnabled(false)
                 .build();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.setFirestoreSettings(settings);
     }
 

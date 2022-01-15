@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.watchnext.activities.guests.GuestsActivity;
 import com.example.watchnext.activities.users.UsersActivity;
+import com.example.watchnext.models.Model;
 
 public class IntroActivity extends AppCompatActivity {
 
@@ -15,12 +16,20 @@ public class IntroActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro);
 
-        // TODO: Check if user exist with FireBase Auth
-        if (false) {
-            startUsersActivity();
-        } else {
-            startGuestsActivity();
-        }
+        Model.instance.executor.execute(() -> {
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            // TODO: Check if user exist with FireBase Auth
+            if (Model.instance.isSignedIn()) {
+                startUsersActivity();
+            } else {
+                startGuestsActivity();
+            }
+        });
+
     }
 
     private void startGuestsActivity() {
