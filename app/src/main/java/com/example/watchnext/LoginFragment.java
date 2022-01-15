@@ -41,26 +41,26 @@ public class LoginFragment extends Fragment {
 
     private void setLoginButtonOnClickListener(MaterialButton loginButton) {
         loginButton.setOnClickListener(view -> {
-            handlePasswordValidation();
-            handleEmailValidation();
+            setErrorIfPasswordIsNotValid();
+            setErrorIfEmailIsNotValid();
         });
     }
 
     private void setPasswordEditTextOnKeyListener(TextInputEditText passwordEditText, TextInputLayout passwordTextInput) {
         passwordEditText.setOnKeyListener((view, i, keyEvent) -> {
-            handlePasswordValidation();
+            setErrorIfPasswordIsNotValid();
             return false;
         });
     }
 
     private void setEmailEditTextOnKeyListener(TextInputEditText emailEditText, TextInputLayout emailTextInput) {
         emailEditText.setOnKeyListener((view, i, keyEvent) -> {
-            handleEmailValidation();
-            return false; // TODO: Why return something?
+            setErrorIfEmailIsNotValid();
+            return false;
         });
     }
 
-    private void handlePasswordValidation() {
+    private void setErrorIfPasswordIsNotValid() {
         if (!inputValidator.isPasswordValid(passwordEditText.getText())) {
             passwordTextInput.setError(getString(R.string.login_password_error));
         } else {
@@ -68,7 +68,7 @@ public class LoginFragment extends Fragment {
         }
     }
 
-    public void handleEmailValidation() {
+    public void setErrorIfEmailIsNotValid() {
         if (!inputValidator.isEmailValid(emailEditText.getText())) {
             emailTextInput.setError(getString(R.string.login_email_error));
         } else {
