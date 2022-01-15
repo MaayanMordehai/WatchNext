@@ -1,4 +1,4 @@
-package com.example.watchnext;
+package com.example.watchnext.fragments.guests;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
 
+import com.example.watchnext.R;
 import com.example.watchnext.validations.InputValidator;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
