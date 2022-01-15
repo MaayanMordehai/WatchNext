@@ -1,4 +1,4 @@
-package com.example.watchnext.users.activities;
+package com.example.watchnext.activities.guests;
 
 import android.os.Bundle;
 
@@ -6,11 +6,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.watchnext.R;
 
-public class UsersActivity extends AppCompatActivity {
+public class GuestsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_users);
+        setContentView(R.layout.activity_guests);
     }
 }

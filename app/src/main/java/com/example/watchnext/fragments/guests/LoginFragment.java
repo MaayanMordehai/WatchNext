@@ -1,4 +1,4 @@
-package com.example.watchnext.guests.fragments;
+package com.example.watchnext.fragments.guests;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
