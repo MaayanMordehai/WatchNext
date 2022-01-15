@@ -10,7 +10,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WatchNext">
         <activity
-            android:name=".MainActivity"
+            android:name=".IntroActivity"
+            android:exported="false" />
+        <activity
+            android:name=".guests.activities.GuestsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".users.activities.UsersActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
