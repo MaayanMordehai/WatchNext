@@ -11,7 +11,7 @@
         android:theme="@style/Theme.WatchNext"
         android:name="com.example.watchnext.ContextApplication">
         <activity
-            android:name=".MainActivity"
+            android:name=".IntroActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -19,6 +19,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".activities.guests.GuestsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.users.UsersActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
