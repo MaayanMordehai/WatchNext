@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">WatchNext</string>
+    <string name="login_email_hint">Email</string>
+    <string name="login_password_hint">Password</string>
+    <string name="login_button_login">Login</string>
+    <string name="login_refer_to_register_page">Don\'t have an account?</string>
+    <string name="login_register_link_text">Register</string>
+    <string name="login_password_error">Password must be at least 8 characters</string>
+    <string name="login_email_error">Not an email format</string>
 </resources>
