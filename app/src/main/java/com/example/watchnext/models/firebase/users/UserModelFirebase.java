@@ -6,6 +6,7 @@ import com.example.watchnext.models.entities.User;
 import com.example.watchnext.models.firebase.users.interfaces.AddUserListener;
 import com.example.watchnext.models.firebase.users.interfaces.GetAllUsersListener;
 import com.example.watchnext.models.firebase.users.interfaces.GetUserListener;
+import com.example.watchnext.models.firebase.users.interfaces.UpdateUserListener;
 import com.example.watchnext.models.firebase.users.interfaces.UploadUserImageListener;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -49,6 +50,15 @@ public class UserModelFirebase {
         db.collection(COLLECTION_NAME)
                 .document(u.getId())
                 .set(jsonReview)
+                .addOnSuccessListener(unused -> lis.onComplete())
+                .addOnFailureListener(e -> lis.onComplete());
+    }
+
+    public void updateUser(UpdateUserListener lis, User u) {
+        Map<String, Object> jsonUser = u.toMap();
+        db.collection(COLLECTION_NAME)
+                .document(u.getId())
+                .update(jsonUser)
                 .addOnSuccessListener(unused -> lis.onComplete())
                 .addOnFailureListener(e -> lis.onComplete());
     }
