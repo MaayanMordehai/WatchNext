@@ -95,7 +95,7 @@ public class RegisterFragment extends CameraUtilFragment {
                 lastNameEditText.getText().toString(),
                 emailEditText.getText().toString(),
                 passwordEditText.getText().toString());
-        userViewModel.addUser(() -> {
+        userViewModel.register(() -> {
             Navigation.findNavController(view).navigate(RegisterFragmentDirections.actionRegisterFragmentToLoginFragment());
         }, u);
     }
