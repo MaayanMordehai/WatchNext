@@ -14,11 +14,11 @@ import com.example.watchnext.models.entities.User;
 import com.example.watchnext.models.firebase.AuthFirebase;
 import com.example.watchnext.models.firebase.ModelFirebase;
 import com.example.watchnext.models.firebase.reviews.interfaces.AddReviewListener;
-import com.example.watchnext.models.firebase.reviews.interfaces.GetReviewListener;
 import com.example.watchnext.models.firebase.reviews.interfaces.UpdateReviewListener;
 import com.example.watchnext.models.firebase.reviews.interfaces.UploadReviewImageListener;
 import com.example.watchnext.models.firebase.users.interfaces.AddUserListener;
-import com.example.watchnext.models.firebase.users.interfaces.GetUserListener;
+import com.example.watchnext.models.firebase.users.interfaces.LoginListener;
+import com.example.watchnext.models.firebase.users.interfaces.UpdateUserListener;
 import com.example.watchnext.models.firebase.users.interfaces.UploadUserImageListener;
 import com.example.watchnext.models.room.WatchNextLocalDb;
 
@@ -118,20 +118,32 @@ public class Model {
         return usersList;
     }
 
-    public void getReviewById(GetReviewListener listener, String id) {
-        modelfirebase.getReviewById(listener, id);
+    public LiveData<Review> getReviewById(String id) {
+        MutableLiveData<Review> review = new MutableLiveData<>();
+        Model.instance.refreshReviewList();
+        executor.execute(() -> {
+            Review r = WatchNextLocalDb.db.reviewDao().getById(id);
+            review.postValue(r);
+        });
+        return review;
     }
 
     public void addReview(AddReviewListener listener, Review review) {
         modelfirebase.addReview(listener, review);
     }
 
-    public void addUser(AddUserListener lis, User user) {
-        modelfirebase.addUser(lis, user);
+    public LiveData<User> getUserById(String id) {
+        MutableLiveData<User> user = new MutableLiveData<>();
+        Model.instance.refreshUserList();
+        executor.execute(() -> {
+            User u = WatchNextLocalDb.db.userDao().getById(id);
+            user.postValue(u);
+        });
+        return user;
     }
 
-    public void getUserById(GetUserListener listener, String id) {
-        modelfirebase.getUserById(listener, id);
+    public void updateUser(UpdateUserListener lis, User u) {
+        modelfirebase.updateUser(lis, u);
     }
 
     public void updateReview(UpdateReviewListener lis, Review r) {
@@ -149,6 +161,19 @@ public class Model {
 
     public void uploadUserImage(Bitmap imageBmp, String name, UploadUserImageListener listener) {
         modelfirebase.uploadUserImage(imageBmp, name, listener);
+    }
+
+    public void register(AddUserListener userLis, User user) {
+        authFirebase.register(user.getEmail(), user.getPassword());
+        modelfirebase.addUser(userLis, user);
+    }
+
+    public void logout() {
+        authFirebase.logout();
+    }
+
+    public void login(LoginListener lis, String email, String password) {
+        authFirebase.login(lis, email, password);
     }
 
     public boolean isSignedIn() {

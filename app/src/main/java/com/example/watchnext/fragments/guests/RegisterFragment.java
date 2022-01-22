@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 import androidx.navigation.Navigation;
 
 import com.example.watchnext.R;
+import com.example.watchnext.models.Model;
+import com.example.watchnext.models.entities.User;
 import com.example.watchnext.utils.CameraUtilFragment;
 import com.example.watchnext.utils.InputValidator;
 import com.google.android.material.button.MaterialButton;
@@ -82,9 +84,19 @@ public class RegisterFragment extends CameraUtilFragment {
             setErrorIfPasswordIsInvalid();
             setErrorIfConfirmPasswordIsInvalid();
             if(isFormValid()) {
-                Navigation.findNavController(view).navigate(RegisterFragmentDirections.actionRegisterFragmentToLoginFragment());
+                this.register(view);
             }
         });
+    }
+
+    private void register(View view) {
+        User u = new User(firstNameEditText.getText().toString(),
+                lastNameEditText.getText().toString(),
+                emailEditText.getText().toString(),
+                passwordEditText.getText().toString());
+        Model.instance.register(() -> {
+            Navigation.findNavController(view).navigate(RegisterFragmentDirections.actionRegisterFragmentToLoginFragment());
+        }, u);
     }
 
     private boolean isFormValid() {

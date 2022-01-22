@@ -1,5 +1,4 @@
 package com.example.watchnext.models.firebase.users;
-
 import android.graphics.Bitmap;
 
 import com.example.watchnext.models.entities.User;
@@ -46,12 +45,13 @@ public class UserModelFirebase {
     }
 
     public void addUser(AddUserListener lis, User u) {
-        Map<String, Object> jsonReview = u.toMap();
+        Map<String, Object> jsonUser = u.toMap();
         db.collection(COLLECTION_NAME)
-                .document(u.getId())
-                .set(jsonReview)
+                .document()
+                .set(jsonUser)
                 .addOnSuccessListener(unused -> lis.onComplete())
                 .addOnFailureListener(e -> lis.onComplete());
+
     }
 
     public void updateUser(UpdateUserListener lis, User u) {
