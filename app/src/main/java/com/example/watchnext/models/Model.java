@@ -163,8 +163,8 @@ public class Model {
         modelfirebase.uploadUserImage(imageBmp, name, listener);
     }
 
-    public void register(AddUserListener userLis, User user) {
-        authFirebase.register(user.getEmail(), user.getPassword());
+    public void register(AddUserListener userLis, User user, String password) {
+        authFirebase.register(user.getEmail(), password);
         modelfirebase.addUser(userLis, user);
     }
 

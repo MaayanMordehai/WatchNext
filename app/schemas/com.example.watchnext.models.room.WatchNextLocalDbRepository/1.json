@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "5f7171058d27434dec475c367bce0b09",
+    "identityHash": "9db4f8667e767c50fe86cae3869ae083",
     "entities": [
       {
         "tableName": "Review",
@@ -56,7 +56,7 @@
       },
       {
         "tableName": "User",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `firstName` TEXT, `lastName` TEXT, `email` TEXT, `password` TEXT, `imageUrl` TEXT, `updateDate` INTEGER, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `firstName` TEXT, `lastName` TEXT, `email` TEXT, `imageUrl` TEXT, `updateDate` INTEGER, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -79,12 +79,6 @@
           {
             "fieldPath": "email",
             "columnName": "email",
-            "affinity": "TEXT",
-            "notNull": false
-          },
-          {
-            "fieldPath": "password",
-            "columnName": "password",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -114,7 +108,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5f7171058d27434dec475c367bce0b09')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9db4f8667e767c50fe86cae3869ae083')"
     ]
   }
 }
