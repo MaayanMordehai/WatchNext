@@ -13,8 +13,8 @@ import android.view.ViewGroup;
 import androidx.navigation.Navigation;
 
 import com.example.watchnext.R;
+import com.example.watchnext.models.Model;
 import com.example.watchnext.models.entities.User;
-import com.example.watchnext.modelviews.UserViewModel;
 import com.example.watchnext.utils.CameraUtilFragment;
 import com.example.watchnext.utils.InputValidator;
 import com.google.android.material.button.MaterialButton;
@@ -37,7 +37,6 @@ public class RegisterFragment extends CameraUtilFragment {
     private MaterialButton registerButton;
     private MaterialButton backButton;
     private ShapeableImageView profileImageView;
-    UserViewModel userViewModel = new UserViewModel();
 
     public RegisterFragment() {}
 
@@ -95,7 +94,7 @@ public class RegisterFragment extends CameraUtilFragment {
                 lastNameEditText.getText().toString(),
                 emailEditText.getText().toString(),
                 passwordEditText.getText().toString());
-        userViewModel.register(() -> {
+        Model.instance.register(() -> {
             Navigation.findNavController(view).navigate(RegisterFragmentDirections.actionRegisterFragmentToLoginFragment());
         }, u);
     }

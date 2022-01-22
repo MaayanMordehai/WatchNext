@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.example.watchnext.R;
-import com.example.watchnext.modelviews.UserViewModel;
+import com.example.watchnext.models.Model;
 import com.example.watchnext.utils.InputValidator;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -23,7 +23,6 @@ public class LoginFragment extends Fragment {
     private TextInputEditText passwordEditText;
     private MaterialButton loginButton;
     private MaterialButton registerButton;
-    UserViewModel userViewModel = new UserViewModel();
 
     public LoginFragment() {}
 
@@ -57,7 +56,7 @@ public class LoginFragment extends Fragment {
             setErrorIfEmailIsInvalid();
             setErrorIfPasswordIsInvalid();
             if(isFormValid()) {
-                userViewModel.login(() -> {
+                Model.instance.login(() -> {
                     // TODO: nevigate
                 }, emailEditText.getText().toString(), passwordEditText.getText().toString());
             }
