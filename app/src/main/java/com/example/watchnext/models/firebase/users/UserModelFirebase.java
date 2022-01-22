@@ -25,8 +25,7 @@ public class UserModelFirebase {
     public static final String COLLECTION_NAME = "users";
 
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private final FirebaseStorage storage = FirebaseStorage.
-getInstance();
+    private final FirebaseStorage storage = FirebaseStorage.getInstance();
 
     public UserModelFirebase() { }
 
@@ -46,10 +45,10 @@ getInstance();
     }
 
     public void addUser(AddUserListener lis, User u) {
-        Map<String, Object> jsonReview = u.toMap();
+        Map<String, Object> jsonUser = u.toMap();
         db.collection(COLLECTION_NAME)
                 .document()
-                .set(jsonReview)
+                .set(jsonUser)
                 .addOnSuccessListener(unused -> lis.onComplete())
                 .addOnFailureListener(e -> lis.onComplete());
 
