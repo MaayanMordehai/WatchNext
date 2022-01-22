@@ -24,7 +24,7 @@ public class IntroActivity extends AppCompatActivity {
             }
 
             if (Model.instance.isSignedIn()) {
-                startGuestsActivity();
+                startUsersActivity();
             } else {
                 startGuestsActivity();
             }
