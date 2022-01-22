@@ -19,6 +19,8 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.example.watchnext.R;
+import com.example.watchnext.models.entities.User;
+import com.example.watchnext.modelviews.UserViewModel;
 import com.example.watchnext.utils.InputValidator;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -43,6 +45,7 @@ public class RegisterFragment extends Fragment {
     private MaterialButton registerButton;
     private MaterialButton backButton;
     private ShapeableImageView profileImageView;
+    UserViewModel userViewModel = new UserViewModel();
 
     public RegisterFragment() {}
 
@@ -90,9 +93,19 @@ public class RegisterFragment extends Fragment {
             setErrorIfPasswordIsInvalid();
             setErrorIfConfirmPasswordIsInvalid();
             if(isFormValid()) {
-                Navigation.findNavController(view).navigate(RegisterFragmentDirections.actionRegisterFragmentToLoginFragment());
+                this.register(view);
             }
         });
+    }
+
+    private void register(View view) {
+        User u = new User(firstNameEditText.getText().toString(),
+                lastNameEditText.getText().toString(),
+                emailEditText.getText().toString(),
+                passwordEditText.getText().toString());
+        userViewModel.addUser(() -> {
+            Navigation.findNavController(view).navigate(RegisterFragmentDirections.actionRegisterFragmentToLoginFragment());
+        }, u);
     }
 
     private boolean isFormValid() {

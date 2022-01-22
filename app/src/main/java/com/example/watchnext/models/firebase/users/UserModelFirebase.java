@@ -1,5 +1,4 @@
 package com.example.watchnext.models.firebase.users;
-
 import android.graphics.Bitmap;
 
 import com.example.watchnext.models.entities.User;
@@ -26,7 +25,8 @@ public class UserModelFirebase {
     public static final String COLLECTION_NAME = "users";
 
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private final FirebaseStorage storage = FirebaseStorage.getInstance();
+    private final FirebaseStorage storage = FirebaseStorage.
+getInstance();
 
     public UserModelFirebase() { }
 
@@ -48,10 +48,11 @@ public class UserModelFirebase {
     public void addUser(AddUserListener lis, User u) {
         Map<String, Object> jsonReview = u.toMap();
         db.collection(COLLECTION_NAME)
-                .document(u.getId())
+                .document()
                 .set(jsonReview)
                 .addOnSuccessListener(unused -> lis.onComplete())
                 .addOnFailureListener(e -> lis.onComplete());
+
     }
 
     public void updateUser(UpdateUserListener lis, User u) {

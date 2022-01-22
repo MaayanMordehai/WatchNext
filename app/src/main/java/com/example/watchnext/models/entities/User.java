@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.example.watchnext.ContextApplication;
@@ -30,7 +31,19 @@ public class User {
     private String imageUrl;
     private Long updateDate;
 
-    public User(@NonNull String id,
+    @Ignore
+    public User(String firstName,
+                String lastName,
+                String email,
+                String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.imageUrl = "";
+    }
+
+    public User(String id,
                 String firstName,
                 String lastName,
                 String email,
@@ -60,7 +73,6 @@ public class User {
 
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
-        result.put("id", id);
         result.put("firstName", firstName);
         result.put("lastName", lastName);
         result.put("email", email);

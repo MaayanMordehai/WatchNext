@@ -3,6 +3,7 @@ package com.example.watchnext.models;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import androidx.core.os.HandlerCompat;
 import androidx.lifecycle.LiveData;
@@ -19,6 +20,7 @@ import com.example.watchnext.models.firebase.reviews.interfaces.UpdateReviewList
 import com.example.watchnext.models.firebase.reviews.interfaces.UploadReviewImageListener;
 import com.example.watchnext.models.firebase.users.interfaces.AddUserListener;
 import com.example.watchnext.models.firebase.users.interfaces.GetUserListener;
+import com.example.watchnext.models.firebase.users.interfaces.UpdateUserListener;
 import com.example.watchnext.models.firebase.users.interfaces.UploadUserImageListener;
 import com.example.watchnext.models.room.WatchNextLocalDb;
 
@@ -98,6 +100,7 @@ public class Model {
             executor.execute(() -> {
                 Long lastUpdated = 0L;
                 for (User u: users) {
+                    Log.d("User!!!!!!!!", u.toString());
                     if (lastUpdated < u.getUpdateDate()) {
                         lastUpdated = u.getUpdateDate();
                     }
@@ -118,8 +121,14 @@ public class Model {
         return usersList;
     }
 
-    public void getReviewById(GetReviewListener listener, String id) {
-        modelfirebase.getReviewById(listener, id);
+    public LiveData<Review> getReviewById(String id) {
+        MutableLiveData<Review> review = new MutableLiveData<>();
+        Model.instance.refreshReviewList();
+        executor.execute(() -> {
+            Review r = WatchNextLocalDb.db.reviewDao().getById(id);
+            review.postValue(r);
+        });
+        return review;
     }
 
     public void addReview(AddReviewListener listener, Review review) {
@@ -130,8 +139,18 @@ public class Model {
         modelfirebase.addUser(lis, user);
     }
 
-    public void getUserById(GetUserListener listener, String id) {
-        modelfirebase.getUserById(listener, id);
+    public LiveData<User> getUserById(String id) {
+        MutableLiveData<User> user = new MutableLiveData<>();
+        Model.instance.refreshUserList();
+        executor.execute(() -> {
+            User u = WatchNextLocalDb.db.userDao().getById(id);
+            user.postValue(u);
+        });
+        return user;
+    }
+
+    public void updateUser(UpdateUserListener lis, User u) {
+        modelfirebase.updateUser(lis, u);
     }
 
     public void updateReview(UpdateReviewListener lis, Review r) {

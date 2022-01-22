@@ -14,6 +14,7 @@ import com.example.watchnext.models.firebase.users.UserModelFirebase;
 import com.example.watchnext.models.firebase.users.interfaces.AddUserListener;
 import com.example.watchnext.models.firebase.users.interfaces.GetAllUsersListener;
 import com.example.watchnext.models.firebase.users.interfaces.GetUserListener;
+import com.example.watchnext.models.firebase.users.interfaces.UpdateUserListener;
 import com.example.watchnext.models.firebase.users.interfaces.UploadUserImageListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
@@ -65,5 +66,9 @@ public class ModelFirebase {
 
     public void uploadReviewImage(Bitmap imageBmp, String name, UploadReviewImageListener listener) {
         reviewFirebase.uploadReviewImage(imageBmp, name, listener);
+    }
+
+    public void updateUser(UpdateUserListener lis, User u) {
+        userFirebase.updateUser(lis, u);
     }
 }
