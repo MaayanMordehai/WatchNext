@@ -49,7 +49,7 @@ public class ReviewModelFirebase {
     public void addReview(AddReviewListener lis, Review r) {
         Map<String, Object> jsonReview = r.toMap();
         db.collection(COLLECTION_NAME)
-                .document(r.getId())
+                .document()
                 .set(jsonReview)
                 .addOnSuccessListener(unused -> lis.onComplete())
                 .addOnFailureListener(e -> lis.onComplete());

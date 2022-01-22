@@ -56,7 +56,6 @@ public class Review {
 
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
-        result.put("id", id);
         result.put("title", title);
         result.put("description", description);
         result.put("imageUrl", imageUrl);
