@@ -4,6 +4,7 @@ import static android.app.Activity.RESULT_OK;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 
 import androidx.navigation.Navigation;
 
+import com.example.watchnext.ContextApplication;
 import com.example.watchnext.R;
 import com.example.watchnext.models.Model;
 import com.example.watchnext.models.entities.User;
@@ -94,9 +96,19 @@ public class RegisterFragment extends CameraUtilFragment {
                 lastNameEditText.getText().toString(),
                 emailEditText.getText().toString(),
                 passwordEditText.getText().toString());
-        Model.instance.register(() -> {
-            Navigation.findNavController(view).navigate(RegisterFragmentDirections.actionRegisterFragmentToLoginFragment());
-        }, u);
+        Bitmap profieImage = ((BitmapDrawable)profileImageView.getDrawable()).getBitmap();
+        if (profieImage == null) {
+            Model.instance.register(() -> {
+                Navigation.findNavController(view).navigate(RegisterFragmentDirections.actionRegisterFragmentToLoginFragment());
+            }, u);
+        } else {
+            Model.instance.uploadUserImage(profieImage, u.getEmail() + ".jpg", (url) -> {
+                u.setImageUrl(url);
+                Model.instance.register(() -> {
+                    Navigation.findNavController(view).navigate(RegisterFragmentDirections.actionRegisterFragmentToLoginFragment());
+                }, u);
+            });
+        }
     }
 
     private boolean isFormValid() {
@@ -196,6 +208,8 @@ public class RegisterFragment extends CameraUtilFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            //Uri returnUri = data.getData();
+            //String mimeType = ContextApplication.getContext().getContentResolver().getType(returnUri);
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             profileImageView.setImageBitmap(imageBitmap);
