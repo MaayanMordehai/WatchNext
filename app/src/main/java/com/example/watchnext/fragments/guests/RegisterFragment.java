@@ -2,35 +2,27 @@ package com.example.watchnext.fragments.guests;
 
 import static android.app.Activity.RESULT_OK;
 
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.appcompat.widget.PopupMenu;
-import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.example.watchnext.R;
 import com.example.watchnext.models.entities.User;
 import com.example.watchnext.modelviews.UserViewModel;
+import com.example.watchnext.utils.CameraUtilFragment;
 import com.example.watchnext.utils.InputValidator;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
-public class RegisterFragment extends Fragment {
-
-    static final int REQUEST_IMAGE_CAPTURE = 1;
-    static final int REQUEST_OPEN_GALLERY = 2;
+public class RegisterFragment extends CameraUtilFragment {
 
     private TextInputLayout firstNameTextInput;
     private TextInputEditText firstNameEditText;
@@ -117,9 +109,7 @@ public class RegisterFragment extends Fragment {
     }
 
     private void setProfileImageViewOnClickListener() {
-        profileImageView.setOnClickListener(view -> {
-            showCameraMenu(view);
-        });
+        profileImageView.setOnClickListener(this::showCameraMenu);
     }
 
     private void setBackButtonOnClickListener() {
@@ -202,42 +192,6 @@ public class RegisterFragment extends Fragment {
         } else {
             confirmPasswordTextInput.setError(null);
         }
-    }
-
-    public void showCameraMenu(View view) {
-        if (this.getContext() != null) {
-            PopupMenu cameraPopupMenu = new PopupMenu(this.getContext(), view);
-            MenuInflater inflater = cameraPopupMenu.getMenuInflater();
-            inflater.inflate(R.menu.camera_menu, cameraPopupMenu.getMenu());
-            cameraPopupMenu.setOnMenuItemClickListener(this::setOnMenuItemClickListener);
-            cameraPopupMenu.show();
-        }
-    }
-
-    private boolean setOnMenuItemClickListener(MenuItem menuItem) {
-        if (menuItem.getItemId() == R.id.camera_menu_open_camera) {
-            openCamera();
-            return true;
-        } else if (menuItem.getItemId() == R.id.camera_menu_open_gallery) {
-            openGallery();
-            return true;
-        }
-        return false;
-    }
-
-    private void openCamera() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        try {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-        } catch (ActivityNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void openGallery() {
-        Intent openGalleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
-        openGalleryIntent.setType("image/*");
-        startActivityForResult(Intent.createChooser(openGalleryIntent, "Select Picture"),REQUEST_OPEN_GALLERY);
     }
 
     @Override
