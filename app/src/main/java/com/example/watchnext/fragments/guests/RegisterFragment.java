@@ -4,6 +4,7 @@ import static android.app.Activity.RESULT_OK;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -94,9 +95,23 @@ public class RegisterFragment extends CameraUtilFragment {
                 lastNameEditText.getText().toString(),
                 emailEditText.getText().toString(),
                 passwordEditText.getText().toString());
-        Model.instance.register(() -> {
-            Navigation.findNavController(view).navigate(RegisterFragmentDirections.actionRegisterFragmentToLoginFragment());
-        }, u);
+        Bitmap profileImage = ((BitmapDrawable)profileImageView.getDrawable()).getBitmap();
+        if (profileImage == null) {
+            Model.instance.register(() -> {
+                navigateToLoginAfterRegister(view);
+            }, u);
+        } else {
+            Model.instance.uploadUserImage(profileImage, u.getEmail() + ".jpg", (url) -> {
+                u.setImageUrl(url);
+                Model.instance.register(() -> {
+                    navigateToLoginAfterRegister(view);
+                }, u);
+            });
+        }
+    }
+
+    private void navigateToLoginAfterRegister(View view) {
+        Navigation.findNavController(view).navigate(RegisterFragmentDirections.actionRegisterFragmentToLoginFragment());
     }
 
     private boolean isFormValid() {
