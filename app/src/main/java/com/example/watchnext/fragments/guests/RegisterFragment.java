@@ -208,8 +208,6 @@ public class RegisterFragment extends CameraUtilFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            //Uri returnUri = data.getData();
-            //String mimeType = ContextApplication.getContext().getContentResolver().getType(returnUri);
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             profileImageView.setImageBitmap(imageBitmap);
