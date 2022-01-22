@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 
 import androidx.navigation.Navigation;
 
-import com.example.watchnext.ContextApplication;
 import com.example.watchnext.R;
 import com.example.watchnext.models.Model;
 import com.example.watchnext.models.entities.User;
@@ -96,19 +95,23 @@ public class RegisterFragment extends CameraUtilFragment {
                 lastNameEditText.getText().toString(),
                 emailEditText.getText().toString(),
                 passwordEditText.getText().toString());
-        Bitmap profieImage = ((BitmapDrawable)profileImageView.getDrawable()).getBitmap();
-        if (profieImage == null) {
+        Bitmap profileImage = ((BitmapDrawable)profileImageView.getDrawable()).getBitmap();
+        if (profileImage == null) {
             Model.instance.register(() -> {
-                Navigation.findNavController(view).navigate(RegisterFragmentDirections.actionRegisterFragmentToLoginFragment());
+                navigateToLoginAfterRegister(view);
             }, u);
         } else {
-            Model.instance.uploadUserImage(profieImage, u.getEmail() + ".jpg", (url) -> {
+            Model.instance.uploadUserImage(profileImage, u.getEmail() + ".jpg", (url) -> {
                 u.setImageUrl(url);
                 Model.instance.register(() -> {
-                    Navigation.findNavController(view).navigate(RegisterFragmentDirections.actionRegisterFragmentToLoginFragment());
+                    navigateToLoginAfterRegister(view);
                 }, u);
             });
         }
+    }
+
+    private void navigateToLoginAfterRegister(View view) {
+        Navigation.findNavController(view).navigate(RegisterFragmentDirections.actionRegisterFragmentToLoginFragment());
     }
 
     private boolean isFormValid() {

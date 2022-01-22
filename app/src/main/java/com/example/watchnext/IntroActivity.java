@@ -22,9 +22,11 @@ public class IntroActivity extends AppCompatActivity {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            // TODO: Check if user exist with FireBase Auth
+
             if (Model.instance.isSignedIn()) {
                 startUsersActivity();
+                Model.instance.logout();
+                startGuestsActivity();
             } else {
                 startGuestsActivity();
             }
