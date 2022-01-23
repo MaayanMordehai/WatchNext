@@ -85,11 +85,20 @@ public class RegisterFragment extends CameraUtilFragment {
             setErrorIfPasswordIsInvalid();
             setErrorIfConfirmPasswordIsInvalid();
             if(isFormValid()) {
-                this.register(view);
+                registerIfValid(view);
             }
         });
     }
 
+    private void registerIfValid(View view) {
+        Model.instance.isEmailExists(emailEditText.getText().toString(), (emailExist) -> {
+            if (emailExist) {
+                emailTextInput.setError("This Email is already registered");
+            } else {
+                this.register(view);
+            }
+        });
+    }
     private void register(View view) {
         User u = new User(firstNameEditText.getText().toString(),
                 lastNameEditText.getText().toString(),
