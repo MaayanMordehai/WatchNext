@@ -1,5 +1,6 @@
 package com.example.watchnext.fragments.users;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,9 +17,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.example.watchnext.IntroActivity;
 import com.example.watchnext.R;
 import com.example.watchnext.common.interfaces.OnItemClickListener;
-import com.example.watchnext.fragments.guests.LoginFragmentDirections;
 import com.example.watchnext.models.Model;
 import com.example.watchnext.models.entities.Review;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -63,10 +64,16 @@ public class FeedFragment extends Fragment {
 
     private void setOnLogoutButtonClickListener() {
         logoutImageFilterView.setOnClickListener(view -> {
-            Model.instance.logout(() -> {
-                Navigation.findNavController(view).navigate(LoginFragmentDirections.actionGlobalLoginFragment());
-            });
+            Model.instance.logout(this::startIntroActivity);
         });
+    }
+
+    private void startIntroActivity() {
+        if (getActivity() != null) {
+            Intent introActivityIntent = new Intent(getActivity(), IntroActivity.class);
+            startActivity(introActivityIntent);
+            getActivity().finish();
+        }
     }
 
     private void setOnAddReviewActionButtonClickListener() {
