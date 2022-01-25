@@ -18,6 +18,7 @@ import com.example.watchnext.models.firebase.reviews.interfaces.UpdateReviewList
 import com.example.watchnext.models.firebase.reviews.interfaces.UploadReviewImageListener;
 import com.example.watchnext.models.firebase.users.interfaces.AddUserListener;
 import com.example.watchnext.models.firebase.users.interfaces.LoginListener;
+import com.example.watchnext.models.firebase.users.interfaces.LogoutListener;
 import com.example.watchnext.models.firebase.users.interfaces.UpdateUserListener;
 import com.example.watchnext.models.firebase.users.interfaces.UploadUserImageListener;
 import com.example.watchnext.models.room.WatchNextLocalDb;
@@ -168,8 +169,8 @@ public class Model {
         modelfirebase.addUser(userLis, user);
     }
 
-    public void logout() {
-        authFirebase.logout();
+    public void logout(LogoutListener lis) {
+        authFirebase.logout(lis);
     }
 
     public void login(LoginListener lis, String email, String password) {

@@ -18,6 +18,14 @@ public class InputValidator {
         return !isFieldEmpty(text);
     }
 
+    public static boolean isReviewTitleValid(@Nullable Editable text) {
+        return !isFieldEmpty(text);
+    }
+
+    public static boolean isReviewDescriptionValid(@Nullable Editable text) {
+        return !isFieldEmpty(text);
+    }
+
     public static boolean isPasswordValid(@Nullable Editable text) {
         return (text != null && text.length() >= 8);
     }

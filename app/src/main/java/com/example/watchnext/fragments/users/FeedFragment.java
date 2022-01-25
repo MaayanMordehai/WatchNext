@@ -1,5 +1,6 @@
 package com.example.watchnext.fragments.users;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,39 +10,76 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.utils.widget.ImageFilterView;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.example.watchnext.IntroActivity;
 import com.example.watchnext.R;
 import com.example.watchnext.common.interfaces.OnItemClickListener;
+import com.example.watchnext.models.Model;
 import com.example.watchnext.models.entities.Review;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class FeedFragment extends Fragment {
 
+    RecyclerView reviewList;
     SwipeRefreshLayout swipeRefresh;
     ReviewListAdapter reviewListAdapter;
+    FloatingActionButton addReviewActionButton;
+    ImageFilterView logoutImageFilterView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_feed, container, false);
-
-        swipeRefresh = view.findViewById(R.id.feed_fragment_swiperefresh);
+        initializeMembers(view);
+        setListeners();
         swipeRefresh.setOnRefreshListener(() -> {}); // TODO: Modal.instance.refreshStudentList
-
-        RecyclerView reviewList = view.findViewById(R.id.feed_fragment_review_list_rv);
         reviewList.setHasFixedSize(true);
         reviewList.setLayoutManager(new LinearLayoutManager(getContext()));
         reviewListAdapter = new ReviewListAdapter();
         reviewList.setAdapter(reviewListAdapter);
-
         reviewListAdapter.setOnItemClickListener((v, position) -> {
             Log.d("TAG", "Clicked Row in position: " + position);
         });
 
         return view;
+    }
+
+    private void initializeMembers(View view) {
+        addReviewActionButton = view.findViewById(R.id.feed_fragment_add_review_button);
+        swipeRefresh = view.findViewById(R.id.feed_fragment_swiperefresh);
+        reviewList = view.findViewById(R.id.feed_fragment_review_list_rv);
+        logoutImageFilterView = view.findViewById(R.id.feed_fragment_logout_image_view);
+    }
+
+    private void setListeners() {
+        setOnAddReviewActionButtonClickListener();
+        setOnLogoutButtonClickListener();
+    }
+
+    private void setOnLogoutButtonClickListener() {
+        logoutImageFilterView.setOnClickListener(view -> {
+            Model.instance.logout(this::startIntroActivity);
+        });
+    }
+
+    private void startIntroActivity() {
+        if (getActivity() != null) {
+            Intent introActivityIntent = new Intent(getActivity(), IntroActivity.class);
+            startActivity(introActivityIntent);
+            getActivity().finish();
+        }
+    }
+
+    private void setOnAddReviewActionButtonClickListener() {
+        addReviewActionButton.setOnClickListener(
+                Navigation.createNavigateOnClickListener(FeedFragmentDirections.actionFeedFragmentToAddReviewFragment())
+        );
     }
 
     static class ReviewListViewHolder extends RecyclerView.ViewHolder {

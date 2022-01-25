@@ -57,7 +57,7 @@ public class LoginFragment extends Fragment {
             setErrorIfPasswordIsInvalid();
             if(isFormValid()) {
                 Model.instance.login(() -> {
-                    // TODO: nevigate
+                    Navigation.findNavController(view).navigate(LoginFragmentDirections.actionLoginFragmentToUsersNavGraph());
                 }, emailEditText.getText().toString(), passwordEditText.getText().toString());
             }
         });
