@@ -23,14 +23,16 @@ import com.example.watchnext.common.interfaces.OnItemClickListener;
 import com.example.watchnext.models.Model;
 import com.example.watchnext.models.entities.Review;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.imageview.ShapeableImageView;
 
 public class FeedFragment extends Fragment {
 
-    RecyclerView reviewList;
-    SwipeRefreshLayout swipeRefresh;
-    ReviewListAdapter reviewListAdapter;
-    FloatingActionButton addReviewActionButton;
-    ImageFilterView logoutImageFilterView;
+    private RecyclerView reviewList;
+    private SwipeRefreshLayout swipeRefresh;
+    private ReviewListAdapter reviewListAdapter;
+    private FloatingActionButton addReviewActionButton;
+    private ImageFilterView logoutImageFilterView;
+    private ShapeableImageView profileImageView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -38,7 +40,7 @@ public class FeedFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_feed, container, false);
         initializeMembers(view);
         setListeners();
-        swipeRefresh.setOnRefreshListener(() -> {}); // TODO: Modal.instance.refreshStudentList
+        swipeRefresh.setOnRefreshListener(() -> {}); // TODO: Modal.instance.refreshReviewList
         reviewList.setHasFixedSize(true);
         reviewList.setLayoutManager(new LinearLayoutManager(getContext()));
         reviewListAdapter = new ReviewListAdapter();
@@ -55,11 +57,17 @@ public class FeedFragment extends Fragment {
         swipeRefresh = view.findViewById(R.id.feed_fragment_swiperefresh);
         reviewList = view.findViewById(R.id.feed_fragment_review_list_rv);
         logoutImageFilterView = view.findViewById(R.id.feed_fragment_logout_image_view);
+        profileImageView = view.findViewById(R.id.feed_fragment_profile_image_view);
     }
 
     private void setListeners() {
         setOnAddReviewActionButtonClickListener();
         setOnLogoutButtonClickListener();
+        setOnProfileImageClickListener();
+    }
+
+    private void setOnProfileImageClickListener() {
+        profileImageView.setOnClickListener(Navigation.createNavigateOnClickListener(FeedFragmentDirections.actionFeedFragmentToProfileFragment()));
     }
 
     private void setOnLogoutButtonClickListener() {
