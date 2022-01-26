@@ -85,27 +85,35 @@ public class RegisterFragment extends CameraUtilFragment {
             setErrorIfPasswordIsInvalid();
             setErrorIfConfirmPasswordIsInvalid();
             if(isFormValid()) {
-                this.register(view);
+                registerIfValid(view);
             }
         });
     }
 
+    private void registerIfValid(View view) {
+        Model.instance.isEmailExists(emailEditText.getText().toString(), (emailExist) -> {
+            if (emailExist) {
+                emailTextInput.setError("This Email is already registered");
+            } else {
+                this.register(view);
+            }
+        });
+    }
     private void register(View view) {
         User u = new User(firstNameEditText.getText().toString(),
                 lastNameEditText.getText().toString(),
-                emailEditText.getText().toString(),
-                passwordEditText.getText().toString());
+                emailEditText.getText().toString());
         Bitmap profileImage = ((BitmapDrawable)profileImageView.getDrawable()).getBitmap();
         if (profileImage == null) {
             Model.instance.register(() -> {
                 navigateToLoginAfterRegister(view);
-            }, u);
+            }, u, passwordEditText.getText().toString());
         } else {
             Model.instance.uploadUserImage(profileImage, u.getEmail() + ".jpg", (url) -> {
                 u.setImageUrl(url);
                 Model.instance.register(() -> {
                     navigateToLoginAfterRegister(view);
-                }, u);
+                }, u, passwordEditText.getText().toString());
             });
         }
     }

@@ -17,6 +17,7 @@ import com.example.watchnext.models.firebase.reviews.interfaces.AddReviewListene
 import com.example.watchnext.models.firebase.reviews.interfaces.UpdateReviewListener;
 import com.example.watchnext.models.firebase.reviews.interfaces.UploadReviewImageListener;
 import com.example.watchnext.models.firebase.users.interfaces.AddUserListener;
+import com.example.watchnext.models.firebase.users.interfaces.IsEmailExistListener;
 import com.example.watchnext.models.firebase.users.interfaces.LoginListener;
 import com.example.watchnext.models.firebase.users.interfaces.LogoutListener;
 import com.example.watchnext.models.firebase.users.interfaces.UpdateUserListener;
@@ -164,8 +165,8 @@ public class Model {
         modelfirebase.uploadUserImage(imageBmp, name, listener);
     }
 
-    public void register(AddUserListener userLis, User user) {
-        authFirebase.register(user.getEmail(), user.getPassword());
+    public void register(AddUserListener userLis, User user, String password) {
+        authFirebase.register(user.getEmail(), password);
         modelfirebase.addUser(userLis, user);
     }
 
@@ -177,8 +178,11 @@ public class Model {
         authFirebase.login(lis, email, password);
     }
 
+    public void isEmailExists(String email, IsEmailExistListener lis){
+        authFirebase.isEmailExist(email, lis);
+    }
+
     public boolean isSignedIn() {
         return authFirebase.isSignedIn();
     }
-
 }

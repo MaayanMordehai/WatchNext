@@ -1,5 +1,6 @@
 package com.example.watchnext.models.firebase;
 
+import com.example.watchnext.models.firebase.users.interfaces.IsEmailExistListener;
 import com.example.watchnext.models.firebase.users.interfaces.LoginListener;
 import com.example.watchnext.models.firebase.users.interfaces.LogoutListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,4 +29,11 @@ public class AuthFirebase {
         return (currentUser != null);
     }
 
+    public void isEmailExist(String email, IsEmailExistListener lis) {
+        firebaseAuth.fetchSignInMethodsForEmail(email)
+                .addOnCompleteListener(task -> {
+                        boolean isNewUser = task.getResult().getSignInMethods().isEmpty();
+                        lis.onComplete(!isNewUser);
+                });
+    }
 }

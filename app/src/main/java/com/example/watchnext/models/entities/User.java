@@ -27,19 +27,16 @@ public class User {
     private String firstName;
     private String lastName;
     private String email;
-    private String password;
     private String imageUrl;
     private Long updateDate;
 
     @Ignore
     public User(String firstName,
                 String lastName,
-                String email,
-                String password) {
+                String email) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.password = password;
         this.imageUrl = "";
     }
 
@@ -47,14 +44,12 @@ public class User {
                 String firstName,
                 String lastName,
                 String email,
-                String password,
                 String imageUrl,
                 Long updateDate) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.password = password;
         this.imageUrl = imageUrl;
         this.updateDate = updateDate;
     }
@@ -64,11 +59,10 @@ public class User {
         String firstName = Objects.requireNonNull(user.get("firstName")).toString();
         String lastName = Objects.requireNonNull(user.get("lastName")).toString();
         String email = Objects.requireNonNull(user.get("email")).toString();
-        String password = Objects.requireNonNull(user.get("password")).toString();
         String imageUrl = Objects.requireNonNull(user.get("imageUrl")).toString();
         Timestamp ts = (Timestamp) Objects.requireNonNull(user.get("updateDate"));
         Long updateDate = ts.getSeconds();
-        return new User(id, firstName, lastName, email, password, imageUrl, updateDate);
+        return new User(id, firstName, lastName, email, imageUrl, updateDate);
     }
 
     public Map<String, Object> toMap() {
@@ -76,7 +70,6 @@ public class User {
         result.put("firstName", firstName);
         result.put("lastName", lastName);
         result.put("email", email);
-        result.put("password", password);
         result.put("imageUrl", imageUrl);
         result.put("updateDate", FieldValue.serverTimestamp());
         return result;
@@ -113,14 +106,6 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getImageUrl() {
