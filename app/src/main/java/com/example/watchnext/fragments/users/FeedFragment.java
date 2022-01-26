@@ -46,7 +46,7 @@ public class FeedFragment extends Fragment {
         reviewListAdapter = new ReviewListAdapter();
         reviewList.setAdapter(reviewListAdapter);
         reviewListAdapter.setOnItemClickListener((v, position) -> {
-            Log.d("TAG", "Clicked Row in position: " + position);
+            Navigation.findNavController(v).navigate(FeedFragmentDirections.actionFeedFragmentToReviewDetailsFragment());
         });
 
         return view;
