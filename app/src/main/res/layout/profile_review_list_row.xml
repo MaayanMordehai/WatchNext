@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:layout_margin="8dp"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardBackgroundColor="@color/card_background_color"
+    app:cardCornerRadius="15dp"
+    app:cardElevation="8dp"
+    app:cardPreventCornerOverlap="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp">
+
+        <ImageView
+            android:id="@+id/profile_review_list_row_card_imageview"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:alpha="0.15"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/placeholder_review_image" />
+
+        <TextView
+            android:id="@+id/profile_review_list_row_card_title_textview"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:padding="2dp"
+            android:text="@string/title"
+            android:textColor="@color/white"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/profile_review_list_row_card_imageview"
+            app:layout_constraintEnd_toStartOf="@+id/profile_review_list_row_card_link_button"
+            app:layout_constraintStart_toStartOf="@+id/profile_review_list_row_card_imageview"
+            app:layout_constraintTop_toTopOf="@+id/profile_review_list_row_card_imageview" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/profile_review_list_row_card_link_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_marginEnd="10dp"
+            app:icon="@drawable/outline_open_in_new_24"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:iconSize="16dp"
+            android:clickable="false"
+            android:focusable="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/profile_review_list_row_card_imageview"
+            app:layout_constraintTop_toTopOf="@+id/profile_review_list_row_card_imageview" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>
