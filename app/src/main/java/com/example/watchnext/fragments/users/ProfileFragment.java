@@ -39,7 +39,7 @@ public class ProfileFragment extends Fragment {
         profileReviewListAdapter = new ProfileReviewListAdapter();
         profileReviewList.setAdapter(profileReviewListAdapter);
         profileReviewListAdapter.setOnItemClickListener((v, position) -> {
-            Log.d("TAG", "Clicked Row in position: " + position);
+            Navigation.findNavController(v).navigate(ProfileFragmentDirections.actionProfileFragmentToReviewDetailsFragment());
         });
         return view;
     }
