@@ -1,7 +1,6 @@
 package com.example.watchnext.fragments.users;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +25,7 @@ public class ProfileFragment extends Fragment {
     private SwipeRefreshLayout swipeRefresh;
     private ProfileReviewListAdapter profileReviewListAdapter;
     private MaterialButton backButton;
+    private MaterialButton editProfileButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -48,10 +48,16 @@ public class ProfileFragment extends Fragment {
         backButton = view.findViewById(R.id.profile_fragment_back_arrow_button);
         profileReviewList = view.findViewById(R.id.profile_fragment_review_list_rv);
         swipeRefresh = view.findViewById(R.id.profile_fragment_my_posts_swiperefresh);
+        editProfileButton = view.findViewById(R.id.profile_fragment_edit_profile_button);
     }
 
     private void setListeners() {
         setBackButtonOnClickListener();
+        setEditProfileButtonOnClickListener();
+    }
+
+    private void setEditProfileButtonOnClickListener() {
+        editProfileButton.setOnClickListener(Navigation.createNavigateOnClickListener(ProfileFragmentDirections.actionProfileFragmentToEditProfileFragment()));
     }
 
     private void setBackButtonOnClickListener() {

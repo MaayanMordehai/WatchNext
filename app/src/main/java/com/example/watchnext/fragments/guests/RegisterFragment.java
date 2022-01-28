@@ -99,6 +99,7 @@ public class RegisterFragment extends CameraUtilFragment {
             }
         });
     }
+
     private void register(View view) {
         User u = new User(firstNameEditText.getText().toString(),
                 lastNameEditText.getText().toString(),
