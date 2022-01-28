@@ -31,7 +31,7 @@ public class UserModelFirebase {
 
     public void getAllUsers(long since, GetAllUsersListener listener) {
         db.collection(COLLECTION_NAME)
-                .whereGreaterThanOrEqualTo("updateDate", since)
+                .whereGreaterThanOrEqualTo("updateDate", new Timestamp(since, 0))
                 .get()
                 .addOnCompleteListener(task -> {
                     List<User> list = new LinkedList<>();

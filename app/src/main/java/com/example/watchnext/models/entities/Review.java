@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.example.watchnext.ContextApplication;
@@ -28,6 +29,14 @@ public class Review {
     private String imageUrl;
     private Long updateDate;
     private boolean isDeleted;
+
+    @Ignore
+    public Review(String title,
+                  String description) {
+        this.title = title;
+        this.description = description;
+        this.imageUrl = ""; // TODO: SET DEFAULT
+    }
 
     public Review(@NonNull String id,
                   String title,

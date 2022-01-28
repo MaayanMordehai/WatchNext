@@ -33,7 +33,7 @@ public class ReviewModelFirebase {
 
     public void getAllReviews(long since, GetAllReviewsListener listener) {
         db.collection(COLLECTION_NAME)
-                .whereGreaterThanOrEqualTo("updateDate", since)
+                .whereGreaterThanOrEqualTo("updateDate", new Timestamp(since, 0))
                 .get()
                 .addOnCompleteListener(task -> {
                     List<Review> list = new LinkedList<>();

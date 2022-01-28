@@ -1,5 +1,6 @@
 package com.example.watchnext.fragments.users;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.utils.widget.ImageFilterView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,8 +21,10 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.watchnext.IntroActivity;
 import com.example.watchnext.R;
 import com.example.watchnext.common.interfaces.OnItemClickListener;
+import com.example.watchnext.enums.LoadingStateEnum;
 import com.example.watchnext.models.Model;
 import com.example.watchnext.models.entities.Review;
+import com.example.watchnext.viewmodel.ReviewListViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.imageview.ShapeableImageView;
 
@@ -32,6 +36,13 @@ public class FeedFragment extends Fragment {
     private FloatingActionButton addReviewActionButton;
     private ImageFilterView logoutImageFilterView;
     private ShapeableImageView profileImageView;
+    private ReviewListViewModel reviewListViewModel;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        reviewListViewModel = new ViewModelProvider(this).get(ReviewListViewModel.class);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -39,16 +50,32 @@ public class FeedFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_feed, container, false);
         initializeMembers(view);
         setListeners();
-        swipeRefresh.setOnRefreshListener(() -> {}); // TODO: Modal.instance.refreshReviewList
+
+        swipeRefresh.setOnRefreshListener(() -> Model.instance.refreshReviewList());
         reviewList.setHasFixedSize(true);
         reviewList.setLayoutManager(new LinearLayoutManager(getContext()));
         reviewListAdapter = new ReviewListAdapter();
         reviewList.setAdapter(reviewListAdapter);
         reviewListAdapter.setOnItemClickListener((v, position) -> {
+            String reviewId = reviewListViewModel.getData().getValue().get(position).getId();
+            // TODO: get review id to next
             Navigation.findNavController(v).navigate(FeedFragmentDirections.actionFeedFragmentToReviewDetailsFragment());
+        });
+        reviewListViewModel.getData().observe(getViewLifecycleOwner(), list1 -> refresh());
+        swipeRefresh.setRefreshing(Model.instance.getReviewListLoadingState().getValue() == LoadingStateEnum.loading);
+        Model.instance.getReviewListLoadingState().observe(getViewLifecycleOwner(), reviewListLoadingState -> {
+            if (reviewListLoadingState == LoadingStateEnum.loading) {
+                swipeRefresh.setRefreshing(true);
+            } else {
+                swipeRefresh.setRefreshing(false);
+            }
         });
 
         return view;
+    }
+
+    private void refresh() {
+        reviewListAdapter.notifyDataSetChanged();
     }
 
     private void initializeMembers(View view) {
@@ -135,12 +162,16 @@ public class FeedFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull ReviewListViewHolder holder, int position) {
-
+            Review r = reviewListViewModel.getData().getValue().get(position);
+            holder.bind(r);
         }
 
         @Override
         public int getItemCount() {
-            return 10;
+            if (reviewListViewModel.getData().getValue() == null) {
+                return 0;
+            }
+            return reviewListViewModel.getData().getValue().size();
         }
 
     }

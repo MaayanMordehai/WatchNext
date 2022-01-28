@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,8 @@ import android.widget.ImageView;
 import androidx.navigation.Navigation;
 
 import com.example.watchnext.R;
+import com.example.watchnext.models.Model;
+import com.example.watchnext.models.entities.Review;
 import com.example.watchnext.utils.CameraUtilFragment;
 import com.example.watchnext.utils.InputValidator;
 import com.google.android.material.button.MaterialButton;
@@ -68,7 +71,11 @@ public class AddReviewFragment extends CameraUtilFragment {
     }
 
     private void post(View view) {
-        // TODO
+        Review r = new Review(titleEditText.getText().toString(), descriptionEditText.getText().toString());
+        Model.instance.addReview(() -> {
+            Log.d("nana", "nana");
+            // TODO nevigate
+        }, r);
     }
 
     private boolean isFormValid() {
