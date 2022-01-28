@@ -11,6 +11,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.watchnext.enums.LoadingStateEnum;
 import com.example.watchnext.models.entities.Review;
 import com.example.watchnext.models.entities.User;
+import com.example.watchnext.models.entities.ReviewWithOwner;
 import com.example.watchnext.models.firebase.AuthFirebase;
 import com.example.watchnext.models.firebase.ModelFirebase;
 import com.example.watchnext.models.firebase.reviews.interfaces.AddReviewListener;
@@ -40,8 +41,14 @@ public class Model {
     private final MutableLiveData<List<User>> usersList = new MutableLiveData<>();
     private final MutableLiveData<LoadingStateEnum> reviewListLoadingState = new MutableLiveData<>();
     private final MutableLiveData<LoadingStateEnum> userListLoadingState = new MutableLiveData<>();
+    private final MutableLiveData<LoadingStateEnum> reviewWithOwnerListLoadingState = new MutableLiveData<>();
+    private final MutableLiveData<List<ReviewWithOwner>> reviewWithOwnerList = new MutableLiveData<>();
 
     private Model() {}
+
+    public MutableLiveData<LoadingStateEnum> getReviewWithOwnerListLoadingState() {
+        return reviewWithOwnerListLoadingState;
+    }
 
     public MutableLiveData<LoadingStateEnum> getReviewListLoadingState() {
         return reviewListLoadingState;
@@ -118,6 +125,21 @@ public class Model {
             refreshUserList();
         }
         return usersList;
+    }
+
+    public void refreshReviewWithOwnerList() {
+        reviewWithOwnerListLoadingState.setValue(LoadingStateEnum.loading);
+        executor.execute(() -> {
+            reviewWithOwnerList.postValue(WatchNextLocalDb.db.reviewDao().getReviewsWithOwners());
+            reviewWithOwnerListLoadingState.postValue(LoadingStateEnum.loaded);
+        });
+    }
+
+    public LiveData<List<ReviewWithOwner>> getAllReviewsWithOwner() {
+        if (reviewWithOwnerList.getValue() == null) {
+            refreshReviewWithOwnerList();
+        }
+        return reviewWithOwnerList;
     }
 
     public LiveData<Review> getReviewById(String id) {
