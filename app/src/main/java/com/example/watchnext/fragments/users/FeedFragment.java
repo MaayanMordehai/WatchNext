@@ -3,7 +3,6 @@ package com.example.watchnext.fragments.users;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +29,8 @@ import com.example.watchnext.viewmodel.ReviewWithOwnerListViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.imageview.ShapeableImageView;
 
+import java.util.Objects;
+
 public class FeedFragment extends Fragment {
 
     private RecyclerView reviewList;
@@ -53,20 +54,18 @@ public class FeedFragment extends Fragment {
         initializeMembers(view);
         setListeners();
 
-        swipeRefresh.setOnRefreshListener(() -> {
-            Model.instance.refreshReviewWithOwnerList();
-        });
+        swipeRefresh.setOnRefreshListener(Model.instance::refreshReviewWithOwnerList);
         reviewList.setHasFixedSize(true);
         reviewList.setLayoutManager(new LinearLayoutManager(getContext()));
         reviewListAdapter = new ReviewListAdapter();
         reviewList.setAdapter(reviewListAdapter);
         reviewListAdapter.setOnItemClickListener((v, position) -> {
-            String reviewId = reviewWithOwnerListViewModel.getData().getValue().get(position).review.getId();
+            String reviewId = Objects.requireNonNull(reviewWithOwnerListViewModel.getData().getValue()).get(position).review.getId();
             // TODO: get review id to next
             Navigation.findNavController(v).navigate(FeedFragmentDirections.actionFeedFragmentToReviewDetailsFragment());
         });
         reviewWithOwnerListViewModel.getData().observe(getViewLifecycleOwner(), list1 -> refresh());
-        swipeRefresh.setRefreshing((Model.instance.getReviewListLoadingState().getValue() == LoadingStateEnum.loading));
+        swipeRefresh.setRefreshing((Model.instance.getReviewWithOwnerListLoadingState().getValue() == LoadingStateEnum.loading));
         Model.instance.getReviewWithOwnerListLoadingState().observe(getViewLifecycleOwner(), reviewWithOwnerListLoadingState -> {
             if (Model.instance.getReviewWithOwnerListLoadingState().getValue() == LoadingStateEnum.loading) {
                 swipeRefresh.setRefreshing(true);

@@ -5,15 +5,14 @@ import android.os.Handler;
 import android.os.Looper;
 
 import androidx.core.os.HandlerCompat;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.watchnext.common.interfaces.RefreshListener;
 import com.example.watchnext.enums.LoadingStateEnum;
 import com.example.watchnext.models.entities.Review;
-import com.example.watchnext.models.entities.User;
 import com.example.watchnext.models.entities.ReviewWithOwner;
+import com.example.watchnext.models.entities.User;
 import com.example.watchnext.models.firebase.AuthFirebase;
 import com.example.watchnext.models.firebase.ModelFirebase;
 import com.example.watchnext.models.firebase.reviews.interfaces.AddReviewListener;
