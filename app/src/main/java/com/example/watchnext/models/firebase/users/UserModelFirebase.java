@@ -31,13 +31,13 @@ public class UserModelFirebase {
 
     public void getAllUsers(long since, GetAllUsersListener listener) {
         db.collection(COLLECTION_NAME)
-                .whereGreaterThanOrEqualTo(User.LAST_UPDATED, new Timestamp(since, 0))
+                .whereGreaterThanOrEqualTo("updateDate", since)
                 .get()
                 .addOnCompleteListener(task -> {
                     List<User> list = new LinkedList<>();
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot doc : task.getResult()) {
-                            list.add(User.create(doc.getData()));
+                            list.add(User.create(doc.getData(), doc.getId()));
                         }
                     }
                     listener.onComplete(list);
@@ -72,7 +72,7 @@ public class UserModelFirebase {
                     if ((task.isSuccessful()) &&
                         (task.getResult() != null) &&
                         (task.getResult().getData() != null)) {
-                        u = User.create(task.getResult().getData());
+                        u = User.create(task.getResult().getData(), task.getResult().getId());
                     }
                     lis.onComplete(u);
                 });

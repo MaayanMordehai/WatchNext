@@ -43,8 +43,7 @@ public class Review {
         this.isDeleted = isDeleted;
     }
 
-    public static Review create(Map<String, Object> json) {
-        String id = Objects.requireNonNull(json.get("id")).toString();
+    public static Review create(Map<String, Object> json, String id) {
         String title = Objects.requireNonNull(json.get("title")).toString();
         String description = Objects.requireNonNull(json.get("description")).toString();
         String imageUrl = Objects.requireNonNull(json.get("imageUrl")).toString();

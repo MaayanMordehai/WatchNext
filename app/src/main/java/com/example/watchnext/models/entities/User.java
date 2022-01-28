@@ -54,8 +54,7 @@ public class User {
         this.updateDate = updateDate;
     }
 
-    public static User create(Map<String, Object> user) {
-        String id = Objects.requireNonNull(user.get("id")).toString();
+    public static User create(Map<String, Object> user, String id) {
         String firstName = Objects.requireNonNull(user.get("firstName")).toString();
         String lastName = Objects.requireNonNull(user.get("lastName")).toString();
         String email = Objects.requireNonNull(user.get("email")).toString();

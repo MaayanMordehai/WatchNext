@@ -33,13 +33,13 @@ public class ReviewModelFirebase {
 
     public void getAllReviews(long since, GetAllReviewsListener listener) {
         db.collection(COLLECTION_NAME)
-                .whereGreaterThanOrEqualTo(Review.LAST_UPDATED, new Timestamp(since, 0))
+                .whereGreaterThanOrEqualTo("updateDate", since)
                 .get()
                 .addOnCompleteListener(task -> {
                     List<Review> list = new LinkedList<>();
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot doc : task.getResult()) {
-                            list.add(Review.create(doc.getData()));
+                            list.add(Review.create(doc.getData(), doc.getId()));
                         }
                     }
                     listener.onComplete(list);
@@ -73,7 +73,7 @@ public class ReviewModelFirebase {
                     if ((task.isSuccessful()) &&
                         (task.getResult() != null) &&
                         (task.getResult().getData() != null)) {
-                        r = Review.create(task.getResult().getData());
+                        r = Review.create(task.getResult().getData(), task.getResult().getId());
                     }
                     lis.onComplete(r);
                 });
