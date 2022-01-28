@@ -54,8 +54,6 @@ public class FeedFragment extends Fragment {
         setListeners();
 
         swipeRefresh.setOnRefreshListener(() -> {
-            Model.instance.refreshUserList();
-            Model.instance.refreshReviewList();
             Model.instance.refreshReviewWithOwnerList();
         });
         reviewList.setHasFixedSize(true);
@@ -68,17 +66,14 @@ public class FeedFragment extends Fragment {
             Navigation.findNavController(v).navigate(FeedFragmentDirections.actionFeedFragmentToReviewDetailsFragment());
         });
         reviewWithOwnerListViewModel.getData().observe(getViewLifecycleOwner(), list1 -> refresh());
-        swipeRefresh.setRefreshing((Model.instance.getReviewListLoadingState().getValue() == LoadingStateEnum.loading)
-                || (Model.instance.getUserListLoadingState().getValue() == LoadingStateEnum.loading)
-                || (Model.instance.getReviewWithOwnerListLoadingState().getValue() == LoadingStateEnum.loading));
+        swipeRefresh.setRefreshing((Model.instance.getReviewListLoadingState().getValue() == LoadingStateEnum.loading));
         Model.instance.getReviewWithOwnerListLoadingState().observe(getViewLifecycleOwner(), reviewWithOwnerListLoadingState -> {
-            if ((Model.instance.getReviewWithOwnerListLoadingState().getValue() == LoadingStateEnum.loading)) {
+            if (Model.instance.getReviewWithOwnerListLoadingState().getValue() == LoadingStateEnum.loading) {
                 swipeRefresh.setRefreshing(true);
             } else {
                 swipeRefresh.setRefreshing(false);
             }
         });
-
         return view;
     }
 

@@ -5,9 +5,11 @@ import android.os.Handler;
 import android.os.Looper;
 
 import androidx.core.os.HandlerCompat;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.watchnext.common.interfaces.RefreshListener;
 import com.example.watchnext.enums.LoadingStateEnum;
 import com.example.watchnext.models.entities.Review;
 import com.example.watchnext.models.entities.User;
@@ -59,7 +61,11 @@ public class Model {
     }
 
     public void refreshReviewList() {
-        reviewListLoadingState.setValue(LoadingStateEnum.loading);
+        refreshReviewList(() -> {});
+    }
+
+    private void refreshReviewList(RefreshListener lis) {
+        reviewListLoadingState.postValue(LoadingStateEnum.loading);
         Long lastUpdateDate = Review.getLocalLastUpdated();
 
         executor.execute(() -> {
@@ -83,6 +89,7 @@ public class Model {
                 List<Review> rwList = WatchNextLocalDb.db.reviewDao().getAll();
                 reviewsList.postValue(rwList);
                 reviewListLoadingState.postValue(LoadingStateEnum.loaded);
+                lis.onComplete();
             });
         });
     }
@@ -95,6 +102,10 @@ public class Model {
     }
 
     public void refreshUserList() {
+        this.refreshUserList(() -> {});
+    }
+
+    private void refreshUserList(RefreshListener lis) {
         userListLoadingState.setValue(LoadingStateEnum.loading);
         Long lastUpdateDate = Review.getLocalLastUpdated();
 
@@ -116,6 +127,7 @@ public class Model {
                 List<Review> rwList = WatchNextLocalDb.db.reviewDao().getAll();
                 reviewsList.postValue(rwList);
                 reviewListLoadingState.postValue(LoadingStateEnum.loaded);
+                lis.onComplete();
             });
         });
     }
@@ -129,9 +141,13 @@ public class Model {
 
     public void refreshReviewWithOwnerList() {
         reviewWithOwnerListLoadingState.setValue(LoadingStateEnum.loading);
-        executor.execute(() -> {
-            reviewWithOwnerList.postValue(WatchNextLocalDb.db.reviewDao().getReviewsWithOwners());
-            reviewWithOwnerListLoadingState.postValue(LoadingStateEnum.loaded);
+        refreshUserList(() -> {
+            refreshReviewList(() -> {
+                executor.execute(() -> {
+                    reviewWithOwnerList.postValue(WatchNextLocalDb.db.reviewDao().getReviewsWithOwners());
+                    reviewWithOwnerListLoadingState.postValue(LoadingStateEnum.loaded);
+                });
+            });
         });
     }
 
