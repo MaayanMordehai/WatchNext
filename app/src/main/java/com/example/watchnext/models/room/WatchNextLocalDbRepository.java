@@ -8,7 +8,7 @@ import com.example.watchnext.models.room.daos.ReviewDao;
 import com.example.watchnext.models.entities.User;
 import com.example.watchnext.models.room.daos.UserDao;
 
-@Database(entities = {Review.class, User.class}, version = 1)
+@Database(entities = {Review.class, User.class}, version = 2)
 public abstract class WatchNextLocalDbRepository extends RoomDatabase {
 
     public abstract ReviewDao reviewDao();

@@ -28,6 +28,7 @@ public class Review {
     private String description;
     private String imageUrl;
     private Long updateDate;
+    private String ownerId;
     private boolean isDeleted;
 
     @Ignore
@@ -43,12 +44,14 @@ public class Review {
                   String description,
                   String imageUrl,
                   Long updateDate,
+                  String ownerId,
                   boolean isDeleted) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.imageUrl = imageUrl;
         this.updateDate = updateDate;
+        this.ownerId = ownerId;
         this.isDeleted = isDeleted;
     }
 
@@ -56,10 +59,11 @@ public class Review {
         String title = Objects.requireNonNull(json.get("title")).toString();
         String description = Objects.requireNonNull(json.get("description")).toString();
         String imageUrl = Objects.requireNonNull(json.get("imageUrl")).toString();
+        String ownerId = Objects.requireNonNull(json.get("ownerId")).toString();
         Timestamp ts = (Timestamp) Objects.requireNonNull(json.get("updateDate"));
         Long updateDate = ts.getSeconds();
         boolean isDeleted = (boolean) Objects.requireNonNull(json.get("isDeleted"));
-        return new Review(id, title, description, imageUrl, updateDate, isDeleted);
+        return new Review(id, title, description, imageUrl, updateDate, ownerId, isDeleted);
     }
 
     public Map<String, Object> toMap() {
@@ -119,6 +123,15 @@ public class Review {
 
     public void setUpdateDate(Long updateDate) {
         this.updateDate = updateDate;
+    }
+
+
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(String creatorId) {
+        this.ownerId = creatorId;
     }
 
     public static void setLocalLastUpdated(Long timestamp) {
