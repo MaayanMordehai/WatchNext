@@ -11,13 +11,13 @@ import java.util.List;
 
 public class ReviewWithOwnerListViewModel extends ViewModel {
 
-    private LiveData<List<ReviewWithOwner>> reviewsWithOwner;
+    private final LiveData<List<ReviewWithOwner>> reviewsWithOwner;
 
     public ReviewWithOwnerListViewModel() {
         reviewsWithOwner = Model.instance.getAllReviewsWithOwner();
     }
 
-    public  LiveData<List<ReviewWithOwner>> getData() {
+    public LiveData<List<ReviewWithOwner>> getData() {
         return reviewsWithOwner;
     }
 }
