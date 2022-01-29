@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -73,7 +72,6 @@ public class AddReviewFragment extends CameraUtilFragment {
     private void post(View view) {
         Review r = new Review(titleEditText.getText().toString(), descriptionEditText.getText().toString());
         Model.instance.addReview(() -> {
-            Log.d("nana", "nana");
             // TODO nevigate
         }, r);
     }

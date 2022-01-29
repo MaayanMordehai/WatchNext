@@ -64,7 +64,7 @@ public class FeedFragment extends Fragment {
             // TODO: get review id to next
             Navigation.findNavController(v).navigate(FeedFragmentDirections.actionFeedFragmentToReviewDetailsFragment());
         });
-        reviewWithOwnerListViewModel.getData().observe(getViewLifecycleOwner(), list1 -> refresh());
+        reviewWithOwnerListViewModel.getData().observe(getViewLifecycleOwner(), reviewWithOwnerList -> refresh());
         swipeRefresh.setRefreshing((Model.instance.getReviewWithOwnerListLoadingState().getValue() == LoadingStateEnum.loading));
         Model.instance.getReviewWithOwnerListLoadingState().observe(getViewLifecycleOwner(), reviewWithOwnerListLoadingState -> {
             if (Model.instance.getReviewWithOwnerListLoadingState().getValue() == LoadingStateEnum.loading) {
