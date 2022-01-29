@@ -35,7 +35,11 @@
         android:id="@+id/addReviewFragment"
         android:name="com.example.watchnext.fragments.users.AddReviewFragment"
         android:label="fragment_add_review"
-        tools:layout="@layout/fragment_add_review" />
+        tools:layout="@layout/fragment_add_review" >
+        <action
+            android:id="@+id/action_addReviewFragment_to_feedFragment"
+            app:destination="@id/feedFragment" />
+    </fragment>
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.example.watchnext.fragments.users.ProfileFragment"

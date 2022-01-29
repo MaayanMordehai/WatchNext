@@ -45,6 +45,8 @@ public class Model {
     private final MutableLiveData<LoadingStateEnum> reviewWithOwnerListLoadingState = new MutableLiveData<>();
     private final MutableLiveData<List<ReviewWithOwner>> reviewWithOwnerList = new MutableLiveData<>();
 
+    private final MutableLiveData<User> currentUser = new MutableLiveData<>();
+
     private Model() {}
 
     public MutableLiveData<LoadingStateEnum> getReviewWithOwnerListLoadingState() {
@@ -171,14 +173,12 @@ public class Model {
         modelfirebase.addReview(listener, review);
     }
 
-    public LiveData<User> getUserById(String id) {
-        MutableLiveData<User> user = new MutableLiveData<>();
-        Model.instance.refreshUserList();
-        executor.execute(() -> {
-            User u = WatchNextLocalDb.db.userDao().getById(id);
-            user.postValue(u);
-        });
-        return user;
+
+    public MutableLiveData<User> getCurrentUser() {
+        if (currentUser.getValue() == null || !authFirebase.getCurrentUserEmail().equals(currentUser.getValue().getEmail())) {
+            modelfirebase.getUserByEmail(currentUser::postValue, authFirebase.getCurrentUserEmail());
+        }
+        return currentUser;
     }
 
     public void updateUser(UpdateUserListener lis, User u) {

@@ -6,6 +6,8 @@ import com.example.watchnext.models.firebase.users.interfaces.LogoutListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.Objects;
+
 public class AuthFirebase {
 
     private final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
@@ -27,6 +29,13 @@ public class AuthFirebase {
     public boolean isSignedIn(){
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
         return (currentUser != null);
+    }
+
+    public String getCurrentUserEmail() {
+        if (isSignedIn()) {
+            return firebaseAuth.getCurrentUser().getEmail();
+        }
+        return null;
     }
 
     public void isEmailExist(String email, IsEmailExistListener lis) {

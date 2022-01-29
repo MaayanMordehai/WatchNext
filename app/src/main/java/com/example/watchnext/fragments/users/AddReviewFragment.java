@@ -4,6 +4,7 @@ import static android.app.Activity.RESULT_OK;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import androidx.navigation.Navigation;
 import com.example.watchnext.R;
 import com.example.watchnext.models.Model;
 import com.example.watchnext.models.entities.Review;
+import com.example.watchnext.models.entities.User;
 import com.example.watchnext.utils.CameraUtilFragment;
 import com.example.watchnext.utils.InputValidator;
 import com.google.android.material.button.MaterialButton;
@@ -31,12 +33,16 @@ public class AddReviewFragment extends CameraUtilFragment {
     private TextInputEditText descriptionEditText;
     private MaterialButton backButton;
     private MaterialButton postButton;
+    private User currentUser;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add_review, container, false);
         initializeMembers(view);
+        Model.instance.getCurrentUser().observe(getViewLifecycleOwner(), (user) -> {
+            currentUser = user;
+        });
         setListeners();
         return view;
     }
@@ -71,9 +77,21 @@ public class AddReviewFragment extends CameraUtilFragment {
 
     private void post(View view) {
         Review r = new Review(titleEditText.getText().toString(), descriptionEditText.getText().toString());
-        Model.instance.addReview(() -> {
-            // TODO nevigate
-        }, r);
+        r.setOwnerId(currentUser.getId());
+        Bitmap reviewImage = ((BitmapDrawable)reviewImageView.getDrawable()).getBitmap();
+        if (reviewImage == null) {
+            Model.instance.addReview(() -> {
+                Navigation.findNavController(view).navigate(AddReviewFragmentDirections.actionAddReviewFragmentToFeedFragment());
+            }, r);
+        } else {
+            // TODO: think of better name than title
+            Model.instance.uploadReviewImage(reviewImage, r.getTitle() + ".jpg", (url) -> {
+                r.setImageUrl(url);
+                Model.instance.addReview(() -> {
+                    Navigation.findNavController(view).navigate(AddReviewFragmentDirections.actionAddReviewFragmentToFeedFragment());
+                }, r);
+            });
+        }
     }
 
     private boolean isFormValid() {

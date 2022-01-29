@@ -56,8 +56,8 @@ public class ModelFirebase {
         userFirebase.addUser(lis, u);
     }
 
-    public void getUserById(GetUserListener lis, String id) {
-        userFirebase.getUserById(lis, id);
+    public void getUserByEmail(GetUserListener lis, String id) {
+        userFirebase.getUserByEmail(lis, id);
     }
 
     public void uploadUserImage(Bitmap imageBmp, String name, UploadUserImageListener listener) {
