@@ -24,8 +24,10 @@ import com.example.watchnext.common.interfaces.OnItemClickListener;
 import com.example.watchnext.enums.LoadingStateEnum;
 import com.example.watchnext.models.Model;
 import com.example.watchnext.models.entities.Review;
+import com.example.watchnext.models.entities.ReviewWithOwner;
 import com.example.watchnext.models.entities.User;
 import com.example.watchnext.viewmodel.ReviewWithOwnerListViewModel;
+import com.example.watchnext.viewmodel.ReviewWithOwnerSharedViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.imageview.ShapeableImageView;
 
@@ -40,6 +42,7 @@ public class FeedFragment extends Fragment {
     private ImageFilterView logoutImageFilterView;
     private ShapeableImageView profileImageView;
     private ReviewWithOwnerListViewModel reviewWithOwnerListViewModel;
+    private ReviewWithOwnerSharedViewModel reviewWithOwnerSharedViewModel;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -59,9 +62,10 @@ public class FeedFragment extends Fragment {
         reviewList.setLayoutManager(new LinearLayoutManager(getContext()));
         reviewListAdapter = new ReviewListAdapter();
         reviewList.setAdapter(reviewListAdapter);
+
+        reviewWithOwnerSharedViewModel = new ViewModelProvider(requireActivity()).get(ReviewWithOwnerSharedViewModel.class);
         reviewListAdapter.setOnItemClickListener((v, position) -> {
-            String reviewId = Objects.requireNonNull(reviewWithOwnerListViewModel.getData().getValue()).get(position).review.getId();
-            // TODO: get review id to next
+            reviewWithOwnerSharedViewModel.select(Objects.requireNonNull(reviewWithOwnerListViewModel.getData().getValue()).get(position));
             Navigation.findNavController(v).navigate(FeedFragmentDirections.actionFeedFragmentToReviewDetailsFragment());
         });
         reviewWithOwnerListViewModel.getData().observe(getViewLifecycleOwner(), reviewWithOwnerList -> refresh());

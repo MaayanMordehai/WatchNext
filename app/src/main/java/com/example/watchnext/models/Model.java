@@ -33,17 +33,22 @@ import java.util.concurrent.Executors;
 public class Model {
 
     public static final Model instance = new Model();
+
     public final Executor executor = Executors.newFixedThreadPool(1);
     public final Handler mainThread = HandlerCompat.createAsync(Looper.getMainLooper());
 
     private final ModelFirebase modelfirebase = new ModelFirebase();
     private final AuthFirebase authFirebase = new AuthFirebase();
+
+
     private final MutableLiveData<List<Review>> reviewsList = new MutableLiveData<>();
-    private final MutableLiveData<List<User>> usersList = new MutableLiveData<>();
     private final MutableLiveData<LoadingStateEnum> reviewListLoadingState = new MutableLiveData<>();
+
+    private final MutableLiveData<List<User>> usersList = new MutableLiveData<>();
     private final MutableLiveData<LoadingStateEnum> userListLoadingState = new MutableLiveData<>();
-    private final MutableLiveData<LoadingStateEnum> reviewWithOwnerListLoadingState = new MutableLiveData<>();
+
     private final MutableLiveData<List<ReviewWithOwner>> reviewWithOwnerList = new MutableLiveData<>();
+    private final MutableLiveData<LoadingStateEnum> reviewWithOwnerListLoadingState = new MutableLiveData<>();
 
     private Model() {}
 
