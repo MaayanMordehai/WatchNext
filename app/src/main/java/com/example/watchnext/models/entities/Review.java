@@ -19,7 +19,8 @@ import java.util.Objects;
 @Entity
 public class Review {
 
-    public static final String LAST_UPDATED = "ReviewLastUpdated";
+    private static final String LAST_UPDATED = "ReviewLastUpdated";
+    public static final String UPDATE_FIELD = "updateDate";
 
     @PrimaryKey
     @NonNull

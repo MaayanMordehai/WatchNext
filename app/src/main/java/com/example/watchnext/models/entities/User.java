@@ -19,7 +19,8 @@ import java.util.Objects;
 @Entity
 public class User {
 
-    public static final String LAST_UPDATED = "UserLastUpdated";
+    private static final String LAST_UPDATED = "UserLastUpdated";
+    public static final String UPDATE_FIELD = "updateDate";
 
     @PrimaryKey
     @NonNull

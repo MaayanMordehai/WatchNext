@@ -16,7 +16,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -33,10 +33,10 @@ public class ReviewModelFirebase {
 
     public void getAllReviews(long since, GetAllReviewsListener listener) {
         db.collection(COLLECTION_NAME)
-                .whereGreaterThanOrEqualTo("updateDate", new Timestamp(since, 0))
+                .whereGreaterThanOrEqualTo(Review.UPDATE_FIELD, new Timestamp(since, 0))
                 .get()
                 .addOnCompleteListener(task -> {
-                    List<Review> list = new LinkedList<>();
+                    List<Review> list = new ArrayList<>();
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot doc : task.getResult()) {
                             list.add(Review.create(doc.getData(), doc.getId()));
