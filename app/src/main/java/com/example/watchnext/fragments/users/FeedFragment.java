@@ -1,8 +1,8 @@
 package com.example.watchnext.fragments.users;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.utils.widget.ImageFilterView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,10 +21,15 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.watchnext.IntroActivity;
 import com.example.watchnext.R;
 import com.example.watchnext.common.interfaces.OnItemClickListener;
+import com.example.watchnext.enums.LoadingStateEnum;
 import com.example.watchnext.models.Model;
 import com.example.watchnext.models.entities.Review;
+import com.example.watchnext.models.entities.User;
+import com.example.watchnext.viewmodel.ReviewWithOwnerListViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.imageview.ShapeableImageView;
+
+import java.util.Objects;
 
 public class FeedFragment extends Fragment {
 
@@ -33,6 +39,13 @@ public class FeedFragment extends Fragment {
     private FloatingActionButton addReviewActionButton;
     private ImageFilterView logoutImageFilterView;
     private ShapeableImageView profileImageView;
+    private ReviewWithOwnerListViewModel reviewWithOwnerListViewModel;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        reviewWithOwnerListViewModel = new ViewModelProvider(this).get(ReviewWithOwnerListViewModel.class);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -40,16 +53,31 @@ public class FeedFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_feed, container, false);
         initializeMembers(view);
         setListeners();
-        swipeRefresh.setOnRefreshListener(() -> {}); // TODO: Modal.instance.refreshReviewList
+
+        swipeRefresh.setOnRefreshListener(Model.instance::refreshReviewWithOwnerList);
         reviewList.setHasFixedSize(true);
         reviewList.setLayoutManager(new LinearLayoutManager(getContext()));
         reviewListAdapter = new ReviewListAdapter();
         reviewList.setAdapter(reviewListAdapter);
         reviewListAdapter.setOnItemClickListener((v, position) -> {
+            String reviewId = Objects.requireNonNull(reviewWithOwnerListViewModel.getData().getValue()).get(position).review.getId();
+            // TODO: get review id to next
             Navigation.findNavController(v).navigate(FeedFragmentDirections.actionFeedFragmentToReviewDetailsFragment());
         });
-
+        reviewWithOwnerListViewModel.getData().observe(getViewLifecycleOwner(), reviewWithOwnerList -> refresh());
+        swipeRefresh.setRefreshing((Model.instance.getReviewWithOwnerListLoadingState().getValue() == LoadingStateEnum.loading));
+        Model.instance.getReviewWithOwnerListLoadingState().observe(getViewLifecycleOwner(), reviewWithOwnerListLoadingState -> {
+            if (Model.instance.getReviewWithOwnerListLoadingState().getValue() == LoadingStateEnum.loading) {
+                swipeRefresh.setRefreshing(true);
+            } else {
+                swipeRefresh.setRefreshing(false);
+            }
+        });
         return view;
+    }
+
+    private void refresh() {
+        reviewListAdapter.notifyDataSetChanged();
     }
 
     private void initializeMembers(View view) {
@@ -110,12 +138,12 @@ public class FeedFragment extends Fragment {
             });
         }
 
-        void bind(Review review) {
+        void bind(Review review, User u) {
             reviewImageView.setImageResource(R.drawable.placeholder_review_image);
             reviewTitle.setText(review.getTitle());
             reviewDescription.setText(review.getDescription());
             reviewOwnerImageView.setImageResource(R.drawable.blank_profile_picture);
-            reviewOwnerFullName.setText("Ran Biderman Placeholder");
+            reviewOwnerFullName.setText(String.format("%s %s", u.getFirstName(), u.getLastName()));
         }
     }
 
@@ -136,12 +164,17 @@ public class FeedFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull ReviewListViewHolder holder, int position) {
-
+            Review r = reviewWithOwnerListViewModel.getData().getValue().get(position).review;
+            User u = reviewWithOwnerListViewModel.getData().getValue().get(position).user;
+            holder.bind(r, u);
         }
 
         @Override
         public int getItemCount() {
-            return 10;
+            if (reviewWithOwnerListViewModel.getData().getValue() == null) {
+                return 0;
+            }
+            return reviewWithOwnerListViewModel.getData().getValue().size();
         }
 
     }

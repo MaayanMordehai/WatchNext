@@ -5,8 +5,10 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Transaction;
 
 import com.example.watchnext.models.entities.Review;
+import com.example.watchnext.models.entities.ReviewWithOwner;
 
 import java.util.List;
 
@@ -24,5 +26,9 @@ public interface ReviewDao {
 
     @Delete
     void delete(Review review);
+
+    @Transaction
+    @Query("SELECT * FROM Review")
+    List<ReviewWithOwner> getReviewsWithOwners();
 
 }

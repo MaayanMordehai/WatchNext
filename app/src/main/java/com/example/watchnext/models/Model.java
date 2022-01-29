@@ -8,8 +8,10 @@ import androidx.core.os.HandlerCompat;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.watchnext.common.interfaces.RefreshListener;
 import com.example.watchnext.enums.LoadingStateEnum;
 import com.example.watchnext.models.entities.Review;
+import com.example.watchnext.models.entities.ReviewWithOwner;
 import com.example.watchnext.models.entities.User;
 import com.example.watchnext.models.firebase.AuthFirebase;
 import com.example.watchnext.models.firebase.ModelFirebase;
@@ -40,8 +42,14 @@ public class Model {
     private final MutableLiveData<List<User>> usersList = new MutableLiveData<>();
     private final MutableLiveData<LoadingStateEnum> reviewListLoadingState = new MutableLiveData<>();
     private final MutableLiveData<LoadingStateEnum> userListLoadingState = new MutableLiveData<>();
+    private final MutableLiveData<LoadingStateEnum> reviewWithOwnerListLoadingState = new MutableLiveData<>();
+    private final MutableLiveData<List<ReviewWithOwner>> reviewWithOwnerList = new MutableLiveData<>();
 
     private Model() {}
+
+    public MutableLiveData<LoadingStateEnum> getReviewWithOwnerListLoadingState() {
+        return reviewWithOwnerListLoadingState;
+    }
 
     public MutableLiveData<LoadingStateEnum> getReviewListLoadingState() {
         return reviewListLoadingState;
@@ -52,7 +60,11 @@ public class Model {
     }
 
     public void refreshReviewList() {
-        reviewListLoadingState.setValue(LoadingStateEnum.loading);
+        refreshReviewList(() -> {});
+    }
+
+    private void refreshReviewList(RefreshListener lis) {
+        reviewListLoadingState.postValue(LoadingStateEnum.loading);
         Long lastUpdateDate = Review.getLocalLastUpdated();
 
         executor.execute(() -> {
@@ -76,6 +88,7 @@ public class Model {
                 List<Review> rwList = WatchNextLocalDb.db.reviewDao().getAll();
                 reviewsList.postValue(rwList);
                 reviewListLoadingState.postValue(LoadingStateEnum.loaded);
+                lis.onComplete();
             });
         });
     }
@@ -88,6 +101,10 @@ public class Model {
     }
 
     public void refreshUserList() {
+        this.refreshUserList(() -> {});
+    }
+
+    private void refreshUserList(RefreshListener lis) {
         userListLoadingState.setValue(LoadingStateEnum.loading);
         Long lastUpdateDate = Review.getLocalLastUpdated();
 
@@ -109,6 +126,7 @@ public class Model {
                 List<Review> rwList = WatchNextLocalDb.db.reviewDao().getAll();
                 reviewsList.postValue(rwList);
                 reviewListLoadingState.postValue(LoadingStateEnum.loaded);
+                lis.onComplete();
             });
         });
     }
@@ -118,6 +136,25 @@ public class Model {
             refreshUserList();
         }
         return usersList;
+    }
+
+    public void refreshReviewWithOwnerList() {
+        reviewWithOwnerListLoadingState.setValue(LoadingStateEnum.loading);
+        refreshUserList(() -> {
+            refreshReviewList(() -> {
+                executor.execute(() -> {
+                    reviewWithOwnerList.postValue(WatchNextLocalDb.db.reviewDao().getReviewsWithOwners());
+                    reviewWithOwnerListLoadingState.postValue(LoadingStateEnum.loaded);
+                });
+            });
+        });
+    }
+
+    public LiveData<List<ReviewWithOwner>> getAllReviewsWithOwner() {
+        if (reviewWithOwnerList.getValue() == null) {
+            refreshReviewWithOwnerList();
+        }
+        return reviewWithOwnerList;
     }
 
     public LiveData<Review> getReviewById(String id) {
