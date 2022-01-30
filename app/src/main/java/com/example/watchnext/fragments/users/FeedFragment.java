@@ -51,6 +51,12 @@ public class FeedFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        Model.instance.refreshReviewWithOwnerList();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_feed, container, false);
