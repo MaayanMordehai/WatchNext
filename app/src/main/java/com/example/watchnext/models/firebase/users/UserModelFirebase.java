@@ -1,4 +1,5 @@
 package com.example.watchnext.models.firebase.users;
+
 import android.graphics.Bitmap;
 
 import com.example.watchnext.models.entities.User;
@@ -16,7 +17,6 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
