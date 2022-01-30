@@ -38,6 +38,7 @@ public class Review {
         this.title = title;
         this.description = description;
         this.imageUrl = ""; // TODO: SET DEFAULT
+        this.isDeleted = false;
     }
 
     public Review(@NonNull String id,
@@ -74,6 +75,7 @@ public class Review {
         result.put("imageUrl", imageUrl);
         result.put("updateDate", FieldValue.serverTimestamp());
         result.put("isDeleted", isDeleted);
+        result.put("ownerId", ownerId);
         return result;
     }
 

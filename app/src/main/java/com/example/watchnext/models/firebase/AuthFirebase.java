@@ -29,6 +29,13 @@ public class AuthFirebase {
         return (currentUser != null);
     }
 
+    public String getCurrentUserEmail() {
+        if (isSignedIn()) {
+            return firebaseAuth.getCurrentUser().getEmail();
+        }
+        return null;
+    }
+
     public void isEmailExist(String email, IsEmailExistListener lis) {
         firebaseAuth.fetchSignInMethodsForEmail(email)
                 .addOnCompleteListener(task -> {

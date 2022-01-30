@@ -79,6 +79,21 @@ public class UserModelFirebase {
                 });
     }
 
+    public void getUserByEmail(GetUserListener lis, String email) {
+        db.collection(COLLECTION_NAME)
+                .whereEqualTo("email", email)
+                .get()
+                .addOnCompleteListener( task -> {
+                    User u = null;
+                    if ((task.isSuccessful()) &&
+                            (task.getResult() != null) &&
+                            (task.getResult().getDocuments().get(0).getData() != null)) {
+                        u = User.create(task.getResult().getDocuments().get(0).getData(), task.getResult().getDocuments().get(0).getId());
+                    }
+                    lis.onComplete(u);
+                });
+    }
+
     public void uploadUserImage(Bitmap imageBmp, String name, UploadUserImageListener listener){
         final StorageReference imagesRef = storage.getReference().child(IMAGE_FOLDER).child(name);
 
