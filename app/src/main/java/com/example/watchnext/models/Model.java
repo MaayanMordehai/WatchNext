@@ -174,7 +174,7 @@ public class Model {
     }
 
 
-    public MutableLiveData<User> getCurrentUser() {
+    public LiveData<User> getCurrentUser() {
         if (currentUser.getValue() == null || !authFirebase.getCurrentUserEmail().equals(currentUser.getValue().getEmail())) {
             modelfirebase.getUserByEmail(currentUser::postValue, authFirebase.getCurrentUserEmail());
         }

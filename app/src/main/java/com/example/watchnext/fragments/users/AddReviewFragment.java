@@ -40,10 +40,8 @@ public class AddReviewFragment extends CameraUtilFragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add_review, container, false);
         initializeMembers(view);
-        Model.instance.getCurrentUser().observe(getViewLifecycleOwner(), (user) -> {
-            currentUser = user;
-        });
         setListeners();
+        observeCurrentUser();
         return view;
     }
 
@@ -65,6 +63,12 @@ public class AddReviewFragment extends CameraUtilFragment {
         setReviewImageViewOnClickListener();
     }
 
+    private void observeCurrentUser() {
+        Model.instance.getCurrentUser().observe(getViewLifecycleOwner(), (user) -> {
+            currentUser = user;
+        });
+    }
+
     private void setPostButtonOnClickListener() {
         postButton.setOnClickListener(view -> {
             setErrorIfTitleIsInvalid();
@@ -81,14 +85,14 @@ public class AddReviewFragment extends CameraUtilFragment {
         Bitmap reviewImage = ((BitmapDrawable)reviewImageView.getDrawable()).getBitmap();
         if (reviewImage == null) {
             Model.instance.addReview(() -> {
-                Navigation.findNavController(view).navigate(AddReviewFragmentDirections.actionAddReviewFragmentToFeedFragment());
+                Navigation.findNavController(view).navigateUp();
             }, r);
         } else {
             // TODO: think of better name than title
             Model.instance.uploadReviewImage(reviewImage, r.getTitle() + ".jpg", (url) -> {
                 r.setImageUrl(url);
                 Model.instance.addReview(() -> {
-                    Navigation.findNavController(view).navigate(AddReviewFragmentDirections.actionAddReviewFragmentToFeedFragment());
+                    Navigation.findNavController(view).navigateUp();
                 }, r);
             });
         }
