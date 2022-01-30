@@ -40,7 +40,6 @@ public class Model {
     private final ModelFirebase modelfirebase = new ModelFirebase();
     private final AuthFirebase authFirebase = new AuthFirebase();
 
-
     private final MutableLiveData<List<Review>> reviewsList = new MutableLiveData<>();
     private final MutableLiveData<LoadingStateEnum> reviewListLoadingState = new MutableLiveData<>();
 

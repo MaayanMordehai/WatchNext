@@ -37,13 +37,7 @@ public class ReviewDetailsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_review_details, container, false);
         initializeMembers(view);
         setListeners();
-
-        reviewWithOwnerSharedViewModel.getSelected().observe(getViewLifecycleOwner(), reviewWithOwner -> {
-            titleTextView.setText(reviewWithOwner.review.getTitle());
-            descriptionTextView.setText(reviewWithOwner.review.getDescription());
-            ownerTextView.setText(String.format("%s %s", reviewWithOwner.user.getFirstName(), reviewWithOwner.user.getLastName()));
-        });
-
+        observeSelectedReviewWithOwner();
         return view;
     }
 
@@ -56,6 +50,14 @@ public class ReviewDetailsFragment extends Fragment {
 
     private void setListeners() {
         setBackButtonOnClickListener();
+    }
+
+    private void observeSelectedReviewWithOwner() {
+        reviewWithOwnerSharedViewModel.getSelected().observe(getViewLifecycleOwner(), reviewWithOwner -> {
+            titleTextView.setText(reviewWithOwner.review.getTitle());
+            descriptionTextView.setText(reviewWithOwner.review.getDescription());
+            ownerTextView.setText(String.format("%s %s", reviewWithOwner.user.getFirstName(), reviewWithOwner.user.getLastName()));
+        });
     }
 
     private void setBackButtonOnClickListener() {

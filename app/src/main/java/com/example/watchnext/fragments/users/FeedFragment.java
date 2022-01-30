@@ -24,7 +24,6 @@ import com.example.watchnext.common.interfaces.OnItemClickListener;
 import com.example.watchnext.enums.LoadingStateEnum;
 import com.example.watchnext.models.Model;
 import com.example.watchnext.models.entities.Review;
-import com.example.watchnext.models.entities.ReviewWithOwner;
 import com.example.watchnext.models.entities.User;
 import com.example.watchnext.viewmodel.ReviewWithOwnerListViewModel;
 import com.example.watchnext.viewmodel.ReviewWithOwnerSharedViewModel;
@@ -48,6 +47,7 @@ public class FeedFragment extends Fragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         reviewWithOwnerListViewModel = new ViewModelProvider(this).get(ReviewWithOwnerListViewModel.class);
+        reviewWithOwnerSharedViewModel = new ViewModelProvider(requireActivity()).get(ReviewWithOwnerSharedViewModel.class);
     }
 
     @Override
@@ -56,32 +56,31 @@ public class FeedFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_feed, container, false);
         initializeMembers(view);
         setListeners();
+        handleRefreshingState();
+        observeReviewWithOwnerList();
+        return view;
+    }
 
-        swipeRefresh.setOnRefreshListener(Model.instance::refreshReviewWithOwnerList);
+    private void initializeRecycleView() {
         reviewList.setHasFixedSize(true);
         reviewList.setLayoutManager(new LinearLayoutManager(getContext()));
         reviewListAdapter = new ReviewListAdapter();
         reviewList.setAdapter(reviewListAdapter);
+    }
 
-        reviewWithOwnerSharedViewModel = new ViewModelProvider(requireActivity()).get(ReviewWithOwnerSharedViewModel.class);
-        reviewListAdapter.setOnItemClickListener((v, position) -> {
-            reviewWithOwnerSharedViewModel.select(Objects.requireNonNull(reviewWithOwnerListViewModel.getData().getValue()).get(position));
-            Navigation.findNavController(v).navigate(FeedFragmentDirections.actionFeedFragmentToReviewDetailsFragment());
-        });
-        reviewWithOwnerListViewModel.getData().observe(getViewLifecycleOwner(), reviewWithOwnerList -> refresh());
+    private void handleRefreshingState() {
         swipeRefresh.setRefreshing((Model.instance.getReviewWithOwnerListLoadingState().getValue() == LoadingStateEnum.loading));
         Model.instance.getReviewWithOwnerListLoadingState().observe(getViewLifecycleOwner(), reviewWithOwnerListLoadingState -> {
-            if (Model.instance.getReviewWithOwnerListLoadingState().getValue() == LoadingStateEnum.loading) {
-                swipeRefresh.setRefreshing(true);
-            } else {
-                swipeRefresh.setRefreshing(false);
-            }
+            swipeRefresh.setRefreshing(Model.instance.getReviewWithOwnerListLoadingState().getValue() == LoadingStateEnum.loading);
         });
-        return view;
     }
 
     private void refresh() {
         reviewListAdapter.notifyDataSetChanged();
+    }
+
+    private void observeReviewWithOwnerList() {
+        reviewWithOwnerListViewModel.getData().observe(getViewLifecycleOwner(), reviewWithOwnerList -> refresh());
     }
 
     private void initializeMembers(View view) {
@@ -90,12 +89,26 @@ public class FeedFragment extends Fragment {
         reviewList = view.findViewById(R.id.feed_fragment_review_list_rv);
         logoutImageFilterView = view.findViewById(R.id.feed_fragment_logout_image_view);
         profileImageView = view.findViewById(R.id.feed_fragment_profile_image_view);
+        initializeRecycleView();
     }
 
     private void setListeners() {
         setOnAddReviewActionButtonClickListener();
         setOnLogoutButtonClickListener();
         setOnProfileImageClickListener();
+        setOnRefreshListener();
+        setOnAdapterItemClickListener();
+    }
+
+    private void setOnAdapterItemClickListener() {
+        reviewListAdapter.setOnItemClickListener((v, position) -> {
+            reviewWithOwnerSharedViewModel.select(Objects.requireNonNull(reviewWithOwnerListViewModel.getData().getValue()).get(position));
+            Navigation.findNavController(v).navigate(FeedFragmentDirections.actionFeedFragmentToReviewDetailsFragment());
+        });
+    }
+
+    private void setOnRefreshListener() {
+        swipeRefresh.setOnRefreshListener(Model.instance::refreshReviewWithOwnerList);
     }
 
     private void setOnProfileImageClickListener() {
@@ -168,9 +181,11 @@ public class FeedFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull ReviewListViewHolder holder, int position) {
-            Review r = reviewWithOwnerListViewModel.getData().getValue().get(position).review;
-            User u = reviewWithOwnerListViewModel.getData().getValue().get(position).user;
-            holder.bind(r, u);
+            if (reviewWithOwnerListViewModel.getData().getValue() != null){
+                Review r = reviewWithOwnerListViewModel.getData().getValue().get(position).review;
+                User u = reviewWithOwnerListViewModel.getData().getValue().get(position).user;
+                holder.bind(r, u);
+            }
         }
 
         @Override
