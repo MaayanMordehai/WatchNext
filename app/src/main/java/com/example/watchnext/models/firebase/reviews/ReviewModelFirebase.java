@@ -1,7 +1,6 @@
 package com.example.watchnext.models.firebase.reviews;
 
 import android.graphics.Bitmap;
-import android.util.Log;
 
 import com.example.watchnext.models.entities.Review;
 import com.example.watchnext.models.firebase.reviews.interfaces.AddReviewListener;
