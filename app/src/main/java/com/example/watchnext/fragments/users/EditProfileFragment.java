@@ -4,6 +4,7 @@ import static android.app.Activity.RESULT_OK;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,13 +14,15 @@ import android.view.ViewGroup;
 import androidx.navigation.Navigation;
 
 import com.example.watchnext.R;
-import com.example.watchnext.fragments.guests.RegisterFragmentDirections;
+import com.example.watchnext.models.Model;
+import com.example.watchnext.models.entities.User;
 import com.example.watchnext.utils.CameraUtilFragment;
 import com.example.watchnext.utils.InputValidator;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.squareup.picasso.Picasso;
 
 public class EditProfileFragment extends CameraUtilFragment {
 
@@ -30,6 +33,7 @@ public class EditProfileFragment extends CameraUtilFragment {
     private MaterialButton saveButton;
     private MaterialButton backButton;
     private ShapeableImageView profileImageView;
+    private User currentUser;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -56,6 +60,18 @@ public class EditProfileFragment extends CameraUtilFragment {
         setFirstNameEditTextOnKeyListener();
         setLastNameEditTextOnKeyListener();
         setProfileImageViewOnClickListener();
+        setCurrentUserListener();
+    }
+
+    private void setCurrentUserListener() {
+        Model.instance.getCurrentUser().observe(getViewLifecycleOwner(), user -> {
+            currentUser = user;
+            if (currentUser.getImageUrl() != null) {
+                Picasso.get()
+                        .load(currentUser.getImageUrl())
+                        .into(profileImageView);
+            }
+        });
     }
 
     private void setSaveButtonOnClickListener() {
@@ -69,8 +85,21 @@ public class EditProfileFragment extends CameraUtilFragment {
     }
 
     private void saveProfile(View view) {
-        // TODO
-        Navigation.findNavController(view).navigateUp();
+        currentUser.setFirstName(firstNameEditText.getText().toString());
+        currentUser.setLastName(lastNameEditText.getText().toString());
+        Bitmap profileImage = ((BitmapDrawable)profileImageView.getDrawable()).getBitmap();
+        if (profileImage == null) {
+            Model.instance.updateUser(() -> {
+                Navigation.findNavController(view).navigateUp();
+            }, currentUser);
+        } else {
+            Model.instance.uploadUserImage(profileImage, currentUser.getEmail() + ".jpg", (url) -> {
+                currentUser.setImageUrl(url);
+                Model.instance.updateUser(() -> {
+                    Navigation.findNavController(view).navigateUp();
+                }, currentUser);
+            });
+        }
     }
 
     private boolean isFormValid() {
