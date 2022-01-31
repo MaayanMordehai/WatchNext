@@ -37,7 +37,7 @@ public class Review {
                   String description) {
         this.title = title;
         this.description = description;
-        this.imageUrl = ""; // TODO: SET DEFAULT
+        this.imageUrl = null;
         this.isDeleted = false;
     }
 
@@ -60,7 +60,12 @@ public class Review {
     public static Review create(Map<String, Object> json, String id) {
         String title = Objects.requireNonNull(json.get("title")).toString();
         String description = Objects.requireNonNull(json.get("description")).toString();
-        String imageUrl = Objects.requireNonNull(json.get("imageUrl")).toString();
+        String imageUrl;
+        if (json.get("imageUrl") != null) {
+            imageUrl = json.get("imageUrl").toString();
+        } else {
+            imageUrl = null;
+        }
         String ownerId = Objects.requireNonNull(json.get("ownerId")).toString();
         Timestamp ts = (Timestamp) Objects.requireNonNull(json.get("updateDate"));
         Long updateDate = ts.getSeconds();

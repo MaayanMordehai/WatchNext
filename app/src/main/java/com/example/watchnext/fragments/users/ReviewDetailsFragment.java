@@ -9,13 +9,16 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import android.view.LayoutInflater;
+import android.view.PointerIcon;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.watchnext.R;
 import com.example.watchnext.viewmodel.ReviewWithOwnerSharedViewModel;
 import com.google.android.material.button.MaterialButton;
+import com.squareup.picasso.Picasso;
 
 public class ReviewDetailsFragment extends Fragment {
 
@@ -24,6 +27,8 @@ public class ReviewDetailsFragment extends Fragment {
     private TextView titleTextView;
     private TextView descriptionTextView;
     private TextView ownerTextView;
+    private ImageView reviewImageView;
+    private ImageView ownerImageView;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -46,6 +51,8 @@ public class ReviewDetailsFragment extends Fragment {
         descriptionTextView = view.findViewById(R.id.review_details_fragment_description_textview);
         ownerTextView = view.findViewById(R.id.review_details_fragment_owner_textview);
         backButton = view.findViewById(R.id.review_details_fragment_back_arrow_button);
+        reviewImageView = view.findViewById(R.id.review_details_fragment_review_image_view);
+        ownerImageView = view.findViewById(R.id.review_details_fragment_owner_imageview);
     }
 
     private void setListeners() {
@@ -57,6 +64,16 @@ public class ReviewDetailsFragment extends Fragment {
             titleTextView.setText(reviewWithOwner.review.getTitle());
             descriptionTextView.setText(reviewWithOwner.review.getDescription());
             ownerTextView.setText(String.format("%s %s", reviewWithOwner.user.getFirstName(), reviewWithOwner.user.getLastName()));
+            if (reviewWithOwner.review.getImageUrl() != null) {
+                Picasso.get()
+                        .load(reviewWithOwner.review.getImageUrl())
+                        .into(reviewImageView);
+            }
+            if (reviewWithOwner.user.getImageUrl() != null) {
+                Picasso.get()
+                        .load(reviewWithOwner.user.getImageUrl())
+                        .into(ownerImageView);
+            }
         });
     }
 

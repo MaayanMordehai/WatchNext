@@ -38,7 +38,7 @@ public class User {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.imageUrl = "";
+        this.imageUrl = null;
     }
 
     public User(String id,
@@ -59,7 +59,12 @@ public class User {
         String firstName = Objects.requireNonNull(user.get("firstName")).toString();
         String lastName = Objects.requireNonNull(user.get("lastName")).toString();
         String email = Objects.requireNonNull(user.get("email")).toString();
-        String imageUrl = Objects.requireNonNull(user.get("imageUrl")).toString();
+        String imageUrl;
+        if (user.get("imageUrl") == null) {
+            imageUrl = null;
+        } else {
+            imageUrl = user.get("imageUrl").toString();
+        }
         Timestamp ts = (Timestamp) Objects.requireNonNull(user.get("updateDate"));
         Long updateDate = ts.getSeconds();
         return new User(id, firstName, lastName, email, imageUrl, updateDate);
