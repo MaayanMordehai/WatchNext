@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.watchnext.models.entities.ReviewWithOwner;
+import com.example.watchnext.models.entities.relations.ReviewWithOwner;
 
 public class ReviewWithOwnerSharedViewModel extends ViewModel {
     private final MutableLiveData<ReviewWithOwner> selected = new MutableLiveData<>();

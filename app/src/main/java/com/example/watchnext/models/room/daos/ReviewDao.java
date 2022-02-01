@@ -8,7 +8,7 @@ import androidx.room.Query;
 import androidx.room.Transaction;
 
 import com.example.watchnext.models.entities.Review;
-import com.example.watchnext.models.entities.ReviewWithOwner;
+import com.example.watchnext.models.entities.relations.ReviewWithOwner;
 
 import java.util.List;
 
@@ -30,5 +30,8 @@ public interface ReviewDao {
     @Transaction
     @Query("SELECT * FROM Review")
     List<ReviewWithOwner> getReviewsWithOwners();
+
+    @Query("SELECT * FROM Review WHERE ownerId=:userId")
+    List<Review> getReviewListByUserId(String userId);
 
 }
