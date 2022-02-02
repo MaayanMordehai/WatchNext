@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.watchnext.R;
+import com.example.watchnext.models.Model;
 import com.example.watchnext.viewmodel.ReviewWithOwnerSharedViewModel;
 import com.google.android.material.button.MaterialButton;
 
@@ -24,6 +25,8 @@ public class ReviewDetailsFragment extends Fragment {
     private TextView titleTextView;
     private TextView descriptionTextView;
     private TextView ownerTextView;
+    private MaterialButton editButton;
+    private MaterialButton deleteButton;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -46,6 +49,8 @@ public class ReviewDetailsFragment extends Fragment {
         descriptionTextView = view.findViewById(R.id.review_details_fragment_description_textview);
         ownerTextView = view.findViewById(R.id.review_details_fragment_owner_textview);
         backButton = view.findViewById(R.id.review_details_fragment_back_arrow_button);
+        editButton = view.findViewById(R.id.review_details_fragment_edit_button);
+        deleteButton = view.findViewById(R.id.review_details_fragment_delete_button);
     }
 
     private void setListeners() {
@@ -54,6 +59,7 @@ public class ReviewDetailsFragment extends Fragment {
 
     private void observeSelectedReviewWithOwner() {
         reviewWithOwnerSharedViewModel.getSelected().observe(getViewLifecycleOwner(), reviewWithOwner -> {
+            showAdminPanelIfOwner(reviewWithOwner.user.getId());
             titleTextView.setText(reviewWithOwner.review.getTitle());
             descriptionTextView.setText(reviewWithOwner.review.getDescription());
             ownerTextView.setText(String.format("%s %s", reviewWithOwner.user.getFirstName(), reviewWithOwner.user.getLastName()));
@@ -64,5 +70,12 @@ public class ReviewDetailsFragment extends Fragment {
         backButton.setOnClickListener(view -> {
             Navigation.findNavController(view).navigateUp();
         });
+    }
+
+    private void showAdminPanelIfOwner(String ownerId) {
+        if (Model.instance.getCurrentUserId().equals(ownerId)) {
+            editButton.setVisibility(View.VISIBLE);
+            deleteButton.setVisibility(View.VISIBLE);
+        }
     }
 }

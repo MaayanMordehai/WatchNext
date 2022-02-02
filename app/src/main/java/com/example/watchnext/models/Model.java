@@ -28,6 +28,8 @@ import com.example.watchnext.models.firebase.users.interfaces.UpdateUserListener
 import com.example.watchnext.models.firebase.users.interfaces.UploadUserImageListener;
 import com.example.watchnext.models.room.WatchNextLocalDb;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -48,6 +50,8 @@ public class Model {
     private final MutableLiveData<List<ReviewWithOwner>> reviewWithOwnerListByUserId = new MutableLiveData<>();
     private final MutableLiveData<LoadingStateEnum> reviewWithOwnerListByUserIdLoadingState = new MutableLiveData<>();
 
+    private final MutableLiveData<User> profileUser = new MutableLiveData<>();
+
     private Model() {}
 
     public MutableLiveData<LoadingStateEnum> getReviewWithOwnerListLoadingState() {
@@ -60,10 +64,6 @@ public class Model {
 
     private void refreshReviewList(RefreshListener lis) {
         Long lastUpdateDate = Review.getLocalLastUpdated();
-        executor.execute(() -> {
-            List<ReviewWithOwner> reviewList = WatchNextLocalDb.db.reviewDao().getReviewsWithOwners();
-            reviewWithOwnerList.postValue(reviewList);
-        });
         modelfirebase.getAllReviews(lastUpdateDate, (reviews) -> {
             executor.execute(() -> {
                 Long lastUpdated = 0L;
@@ -82,12 +82,8 @@ public class Model {
         });
     }
 
-    public void refreshUserList() {
-        this.refreshUserList(() -> {});
-    }
-
     private void refreshUserList(RefreshListener lis) {
-        Long lastUpdateDate = Review.getLocalLastUpdated();
+        Long lastUpdateDate = User.getLocalLastUpdated();
         modelfirebase.getAllUsers(lastUpdateDate, (users) -> {
             executor.execute(() -> {
                 Long lastUpdated = 0L;
@@ -105,10 +101,13 @@ public class Model {
 
     public void refreshReviewWithOwnerList() {
         reviewWithOwnerListLoadingState.setValue(LoadingStateEnum.loading);
+        executor.execute(() -> {
+            reviewWithOwnerListByUserId.postValue(getSortedReviewWithOwnerListFromLocalDb());
+        });
         refreshUserList(() -> {
             refreshReviewList(() -> {
                 executor.execute(() -> {
-                    reviewWithOwnerList.postValue(WatchNextLocalDb.db.reviewDao().getReviewsWithOwners());
+                    reviewWithOwnerList.postValue(getSortedReviewWithOwnerListFromLocalDb());
                     reviewWithOwnerListLoadingState.postValue(LoadingStateEnum.loaded);
                 });
             });
@@ -124,10 +123,13 @@ public class Model {
 
     public void refreshReviewWithOwnerListByUserId(String userId) {
         reviewWithOwnerListByUserIdLoadingState.setValue(LoadingStateEnum.loading);
+        executor.execute(() -> {
+            reviewWithOwnerListByUserId.postValue(getSortedReviewWithOwnerListByUserIdFromLocalDb(userId));
+        });
         refreshUserList(() -> {
             refreshReviewList(() -> {
                 executor.execute(() -> {
-                    reviewWithOwnerListByUserId.postValue(WatchNextLocalDb.db.reviewDao().getReviewsWithOwnersByUserId(userId));
+                    reviewWithOwnerListByUserId.postValue(getSortedReviewWithOwnerListByUserIdFromLocalDb(userId));
                     reviewWithOwnerListByUserIdLoadingState.postValue(LoadingStateEnum.loaded);
                 });
             });
@@ -142,13 +144,29 @@ public class Model {
     }
 
     public LiveData<User> getUserById(String id) {
-        MutableLiveData<User> userMutableLiveData = new MutableLiveData<>();
-        Model.instance.refreshUserList();
         executor.execute(() -> {
             User user = WatchNextLocalDb.db.userDao().getById(id);
-            userMutableLiveData.postValue(user);
+            profileUser.postValue(user);
         });
-        return userMutableLiveData;
+        Model.instance.refreshUserList(() -> {
+            executor.execute(() -> {
+                User user = WatchNextLocalDb.db.userDao().getById(id);
+                profileUser.postValue(user);
+            });
+        });
+        return profileUser;
+    }
+
+    private List<ReviewWithOwner> getSortedReviewWithOwnerListFromLocalDb() {
+        List<ReviewWithOwner> rwList = WatchNextLocalDb.db.reviewDao().getReviewsWithOwners();
+        Collections.sort(rwList, (lhs, rhs) -> rhs.review.getUpdateDate().compareTo(lhs.review.getUpdateDate()));
+        return rwList;
+    }
+
+    private List<ReviewWithOwner> getSortedReviewWithOwnerListByUserIdFromLocalDb(String userId) {
+        List<ReviewWithOwner> rwList = WatchNextLocalDb.db.reviewDao().getReviewsWithOwnersByUserId(userId);
+        Collections.sort(rwList, (lhs, rhs) -> rhs.review.getUpdateDate().compareTo(lhs.review.getUpdateDate()));
+        return rwList;
     }
 
     public void addReview(AddReviewListener listener, Review review) {

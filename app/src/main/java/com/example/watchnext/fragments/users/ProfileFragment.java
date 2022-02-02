@@ -23,6 +23,7 @@ import com.example.watchnext.models.Model;
 import com.example.watchnext.models.entities.Review;
 import com.example.watchnext.viewmodel.ReviewWithOwnerSharedViewModel;
 import com.example.watchnext.viewmodel.UserWithReviewListViewModel;
+import com.example.watchnext.viewmodel.factory.UserWithReviewListByUserIdViewModelFactory;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
 
@@ -30,6 +31,7 @@ import java.util.Objects;
 
 public class ProfileFragment extends Fragment {
 
+    private String userIdFromBundle;
     private TextView userName;
     private TextView email;
     private ShapeableImageView userProfileImage;
@@ -44,14 +46,15 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        userWithReviewListViewModel = new ViewModelProvider(this).get(UserWithReviewListViewModel.class);
+        userIdFromBundle = ProfileFragmentArgs.fromBundle(getArguments()).getUserId();
+        userWithReviewListViewModel = new ViewModelProvider(this, new UserWithReviewListByUserIdViewModelFactory(userIdFromBundle)).get(UserWithReviewListViewModel.class);
         reviewWithOwnerSharedViewModel = new ViewModelProvider(requireActivity()).get(ReviewWithOwnerSharedViewModel.class);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Model.instance.refreshReviewWithOwnerListByUserId(Model.instance.getCurrentUserId());
+        Model.instance.refreshReviewWithOwnerListByUserId(userIdFromBundle);
     }
 
     @Override
@@ -93,7 +96,7 @@ public class ProfileFragment extends Fragment {
 
     private void setOnRefreshListener() {
         swipeRefresh.setOnRefreshListener(() -> {
-            Model.instance.refreshReviewWithOwnerListByUserId(Model.instance.getCurrentUserId());
+            Model.instance.refreshReviewWithOwnerListByUserId(userIdFromBundle);
         });
     }
 

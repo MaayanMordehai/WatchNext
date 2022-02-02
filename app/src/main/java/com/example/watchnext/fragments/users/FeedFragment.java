@@ -118,7 +118,9 @@ public class FeedFragment extends Fragment {
     }
 
     private void setOnProfileImageClickListener() {
-        profileImageView.setOnClickListener(Navigation.createNavigateOnClickListener(FeedFragmentDirections.actionFeedFragmentToProfileFragment()));
+        profileImageView.setOnClickListener(
+                Navigation.createNavigateOnClickListener(FeedFragmentDirections.actionFeedFragmentToProfileFragment(Model.instance.getCurrentUserId()))
+        );
     }
 
     private void setOnLogoutButtonClickListener() {
