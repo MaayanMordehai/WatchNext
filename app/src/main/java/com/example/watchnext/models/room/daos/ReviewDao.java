@@ -31,6 +31,10 @@ public interface ReviewDao {
     @Query("SELECT * FROM Review")
     List<ReviewWithOwner> getReviewsWithOwners();
 
+    @Transaction
+    @Query("SELECT * FROM Review WHERE ownerId=:userId")
+    List<ReviewWithOwner> getReviewsWithOwnersByUserId(String userId);
+
     @Query("SELECT * FROM Review WHERE ownerId=:userId")
     List<Review> getReviewListByUserId(String userId);
 

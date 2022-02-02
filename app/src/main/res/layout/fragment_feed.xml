@@ -33,7 +33,7 @@
             android:layout_height="30dp"
             android:layout_marginEnd="10dp"
             android:layout_toStartOf="@id/feed_fragment_logout_image_view"
-            android:scaleType="fitXY"
+            android:scaleType="centerCrop"
             app:shapeAppearanceOverlay="@style/circleImageView"
             app:srcCompat="@drawable/blank_profile_picture" />
 

@@ -21,9 +21,12 @@ import com.example.watchnext.common.interfaces.OnItemClickListener;
 import com.example.watchnext.enums.LoadingStateEnum;
 import com.example.watchnext.models.Model;
 import com.example.watchnext.models.entities.Review;
+import com.example.watchnext.viewmodel.ReviewWithOwnerSharedViewModel;
 import com.example.watchnext.viewmodel.UserWithReviewListViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
+
+import java.util.Objects;
 
 public class ProfileFragment extends Fragment {
 
@@ -36,17 +39,19 @@ public class ProfileFragment extends Fragment {
     private MaterialButton backButton;
     private MaterialButton editProfileButton;
     private UserWithReviewListViewModel userWithReviewListViewModel;
+    private ReviewWithOwnerSharedViewModel reviewWithOwnerSharedViewModel;
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         userWithReviewListViewModel = new ViewModelProvider(this).get(UserWithReviewListViewModel.class);
+        reviewWithOwnerSharedViewModel = new ViewModelProvider(requireActivity()).get(ReviewWithOwnerSharedViewModel.class);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Model.instance.refreshReviewListByUserId(Model.instance.getCurrentUserId());
+        Model.instance.refreshReviewWithOwnerListByUserId(Model.instance.getCurrentUserId());
     }
 
     @Override
@@ -81,14 +86,14 @@ public class ProfileFragment extends Fragment {
 
     private void setOnAdapterItemClickListener() {
         profileReviewListAdapter.setOnItemClickListener((v, position) -> {
-            /*reviewWithOwnerSharedViewModel.select(Objects.requireNonNull(reviewWithOwnerListViewModel.getData().getValue()).get(position));
-            Navigation.findNavController(v).navigate(FeedFragmentDirections.actionFeedFragmentToReviewDetailsFragment());*/
+            reviewWithOwnerSharedViewModel.select(Objects.requireNonNull(userWithReviewListViewModel.getReviewList().getValue()).get(position));
+            Navigation.findNavController(v).navigate(ProfileFragmentDirections.actionProfileFragmentToReviewDetailsFragment());
         });
     }
 
     private void setOnRefreshListener() {
         swipeRefresh.setOnRefreshListener(() -> {
-            Model.instance.refreshReviewListByUserId(Model.instance.getCurrentUserId());
+            Model.instance.refreshReviewWithOwnerListByUserId(Model.instance.getCurrentUserId());
         });
     }
 
@@ -103,9 +108,9 @@ public class ProfileFragment extends Fragment {
     }
 
     private void handleRefreshingState() {
-        swipeRefresh.setRefreshing((Model.instance.getReviewListByUserIdLoadingState().getValue() == LoadingStateEnum.loading));
-        Model.instance.getReviewListByUserIdLoadingState().observe(getViewLifecycleOwner(), reviewListByUserIdLoadingState -> {
-            swipeRefresh.setRefreshing(Model.instance.getReviewListByUserIdLoadingState().getValue() == LoadingStateEnum.loading);
+        swipeRefresh.setRefreshing((Model.instance.getReviewWithOwnerListByUserIdLoadingState().getValue() == LoadingStateEnum.loading));
+        Model.instance.getReviewWithOwnerListByUserIdLoadingState().observe(getViewLifecycleOwner(), reviewListByUserIdLoadingState -> {
+            swipeRefresh.setRefreshing(Model.instance.getReviewWithOwnerListByUserIdLoadingState().getValue() == LoadingStateEnum.loading);
         });
     }
 
@@ -169,7 +174,7 @@ public class ProfileFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull ProfileReviewListViewHolder holder, int position) {
             if (userWithReviewListViewModel.getReviewList().getValue() != null){
-                Review review = userWithReviewListViewModel.getReviewList().getValue().get(position);
+                Review review = userWithReviewListViewModel.getReviewList().getValue().get(position).review;
                 holder.bind(review);
             }
         }

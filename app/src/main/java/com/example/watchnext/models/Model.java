@@ -42,17 +42,11 @@ public class Model {
     private final ModelFirebase modelfirebase = new ModelFirebase();
     private final AuthFirebase authFirebase = new AuthFirebase();
 
-    private final MutableLiveData<List<Review>> reviewsList = new MutableLiveData<>();
-    private final MutableLiveData<LoadingStateEnum> reviewListLoadingState = new MutableLiveData<>();
-
-    private final MutableLiveData<List<User>> usersList = new MutableLiveData<>();
-    private final MutableLiveData<LoadingStateEnum> userListLoadingState = new MutableLiveData<>();
-
     private final MutableLiveData<List<ReviewWithOwner>> reviewWithOwnerList = new MutableLiveData<>();
     private final MutableLiveData<LoadingStateEnum> reviewWithOwnerListLoadingState = new MutableLiveData<>();
 
-    private final MutableLiveData<List<Review>> reviewListByUserId = new MutableLiveData<>();
-    private final MutableLiveData<LoadingStateEnum> reviewListByUserIdLoadingState = new MutableLiveData<>();
+    private final MutableLiveData<List<ReviewWithOwner>> reviewWithOwnerListByUserId = new MutableLiveData<>();
+    private final MutableLiveData<LoadingStateEnum> reviewWithOwnerListByUserIdLoadingState = new MutableLiveData<>();
 
     private Model() {}
 
@@ -60,31 +54,16 @@ public class Model {
         return reviewWithOwnerListLoadingState;
     }
 
-    public MutableLiveData<LoadingStateEnum> getReviewListLoadingState() {
-        return reviewListLoadingState;
-    }
-
-    public MutableLiveData<LoadingStateEnum> getUserListLoadingState() {
-        return userListLoadingState;
-    }
-
-    public MutableLiveData<LoadingStateEnum> getReviewListByUserIdLoadingState() {
-        return reviewListByUserIdLoadingState;
-    }
-
-    public void refreshReviewList() {
-        refreshReviewList(() -> {});
+    public MutableLiveData<LoadingStateEnum> getReviewWithOwnerListByUserIdLoadingState() {
+        return reviewWithOwnerListByUserIdLoadingState;
     }
 
     private void refreshReviewList(RefreshListener lis) {
-        reviewListLoadingState.postValue(LoadingStateEnum.loading);
         Long lastUpdateDate = Review.getLocalLastUpdated();
-
         executor.execute(() -> {
-            List<Review> reviewList = WatchNextLocalDb.db.reviewDao().getAll();
-            reviewsList.postValue(reviewList);
+            List<ReviewWithOwner> reviewList = WatchNextLocalDb.db.reviewDao().getReviewsWithOwners();
+            reviewWithOwnerList.postValue(reviewList);
         });
-
         modelfirebase.getAllReviews(lastUpdateDate, (reviews) -> {
             executor.execute(() -> {
                 Long lastUpdated = 0L;
@@ -98,19 +77,9 @@ public class Model {
                     }
                 }
                 Review.setLocalLastUpdated(lastUpdated);
-                List<Review> rwList = WatchNextLocalDb.db.reviewDao().getAll();
-                reviewsList.postValue(rwList);
-                reviewListLoadingState.postValue(LoadingStateEnum.loaded);
                 lis.onComplete();
             });
         });
-    }
-
-    public LiveData<List<Review>> getAllReviews() {
-        if (reviewsList.getValue() == null){
-            refreshReviewList();
-        }
-        return reviewsList;
     }
 
     public void refreshUserList() {
@@ -118,14 +87,7 @@ public class Model {
     }
 
     private void refreshUserList(RefreshListener lis) {
-        userListLoadingState.setValue(LoadingStateEnum.loading);
         Long lastUpdateDate = Review.getLocalLastUpdated();
-
-        executor.execute(() -> {
-            List<User> userList = WatchNextLocalDb.db.userDao().getAll();
-            usersList.postValue(userList);
-        });
-
         modelfirebase.getAllUsers(lastUpdateDate, (users) -> {
             executor.execute(() -> {
                 Long lastUpdated = 0L;
@@ -136,19 +98,9 @@ public class Model {
                     WatchNextLocalDb.db.userDao().insertAll(u);
                 }
                 User.setLocalLastUpdated(lastUpdated);
-                List<User> userList = WatchNextLocalDb.db.userDao().getAll();
-                usersList.postValue(userList);
-                userListLoadingState.postValue(LoadingStateEnum.loaded);
                 lis.onComplete();
             });
         });
-    }
-
-    public LiveData<List<User>> getAllUsers() {
-        if (usersList.getValue() == null) {
-            refreshUserList();
-        }
-        return usersList;
     }
 
     public void refreshReviewWithOwnerList() {
@@ -170,39 +122,23 @@ public class Model {
         return reviewWithOwnerList;
     }
 
-    public void refreshReviewListByUserId(String userId) {
-        reviewListByUserIdLoadingState.setValue(LoadingStateEnum.loading);
-        Long lastUpdateDate = Review.getLocalLastUpdated();
-
-        executor.execute(() -> {
-            List<Review> reviewList = WatchNextLocalDb.db.reviewDao().getReviewListByUserId(userId);
-            reviewListByUserId.postValue(reviewList);
-        });
-
-        modelfirebase.getReviewListByUserId(lastUpdateDate, userId, (reviewList) -> {
-            executor.execute(() -> {
-                Long lastUpdated = 0L;
-                for (Review r: reviewList) {
-                    if (lastUpdated < r.getUpdateDate()) {
-                        lastUpdated = r.getUpdateDate();
-                    }
-                    WatchNextLocalDb.db.reviewDao().insertAll(r);
-                    if (r.isDeleted()){
-                        WatchNextLocalDb.db.reviewDao().delete(r);
-                    }
-                }
-                Review.setLocalLastUpdated(lastUpdated);
-                reviewListByUserId.postValue(WatchNextLocalDb.db.reviewDao().getReviewListByUserId(userId));
-                reviewListByUserIdLoadingState.postValue(LoadingStateEnum.loaded);
+    public void refreshReviewWithOwnerListByUserId(String userId) {
+        reviewWithOwnerListByUserIdLoadingState.setValue(LoadingStateEnum.loading);
+        refreshUserList(() -> {
+            refreshReviewList(() -> {
+                executor.execute(() -> {
+                    reviewWithOwnerListByUserId.postValue(WatchNextLocalDb.db.reviewDao().getReviewsWithOwnersByUserId(userId));
+                    reviewWithOwnerListByUserIdLoadingState.postValue(LoadingStateEnum.loaded);
+                });
             });
         });
     }
 
-    public LiveData<List<Review>> getReviewListByUserId(String userId) {
-        if (reviewListByUserId.getValue() == null) {
-            refreshReviewListByUserId(userId);
+    public LiveData<List<ReviewWithOwner>> getReviewWithOwnerListByUserId(String userId) {
+        if (reviewWithOwnerListByUserId.getValue() == null) {
+            refreshReviewWithOwnerListByUserId(userId);
         }
-        return reviewListByUserId;
+        return reviewWithOwnerListByUserId;
     }
 
     public LiveData<User> getUserById(String id) {

@@ -6,21 +6,22 @@ import androidx.lifecycle.ViewModel;
 import com.example.watchnext.models.Model;
 import com.example.watchnext.models.entities.Review;
 import com.example.watchnext.models.entities.User;
+import com.example.watchnext.models.entities.relations.ReviewWithOwner;
 
 import java.util.List;
 
 public class UserWithReviewListViewModel extends ViewModel {
 
     private final LiveData<User> user;
-    private final LiveData<List<Review>> reviewListByUserId;
+    private final LiveData<List<ReviewWithOwner>> reviewListByUserId;
 
     public UserWithReviewListViewModel() {
         String userId = Model.instance.getCurrentUserId();
         user = Model.instance.getUserById(userId);
-        reviewListByUserId = Model.instance.getReviewListByUserId(userId);
+        reviewListByUserId = Model.instance.getReviewWithOwnerListByUserId(userId);
     }
 
-    public LiveData<List<Review>> getReviewList() {
+    public LiveData<List<ReviewWithOwner>> getReviewList() {
         return reviewListByUserId;
     }
 
