@@ -41,6 +41,7 @@ public class EditProfileFragment extends CameraUtilFragment {
         View view = inflater.inflate(R.layout.fragment_edit_profile, container, false);
         initializeMembers(view);
         setListeners();
+        observeUser();
         return view;
     }
 
@@ -60,18 +61,24 @@ public class EditProfileFragment extends CameraUtilFragment {
         setFirstNameEditTextOnKeyListener();
         setLastNameEditTextOnKeyListener();
         setProfileImageViewOnClickListener();
-        setCurrentUserListener();
     }
 
-    private void setCurrentUserListener() {
-        Model.instance.getCurrentUser().observe(getViewLifecycleOwner(), user -> {
+    private void observeUser() {
+        String userIdFromBundle = EditProfileFragmentArgs.fromBundle(getArguments()).getUserId();
+        Model.instance.getUserById(userIdFromBundle).observe(getViewLifecycleOwner(), user -> {
             currentUser = user;
-            if (currentUser.getImageUrl() != null) {
-                Picasso.get()
-                        .load(currentUser.getImageUrl())
-                        .into(profileImageView);
-            }
+            initializeInputsFromUserData();
         });
+    }
+
+    private void initializeInputsFromUserData() {
+        firstNameEditText.setText(currentUser.getFirstName());
+        lastNameEditText.setText(currentUser.getLastName());
+        if (currentUser.getImageUrl() != null) {
+            Picasso.get()
+                    .load(currentUser.getImageUrl())
+                    .into(profileImageView);
+        }
     }
 
     private void setSaveButtonOnClickListener() {
