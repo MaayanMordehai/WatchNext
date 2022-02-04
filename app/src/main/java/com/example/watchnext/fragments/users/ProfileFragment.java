@@ -101,7 +101,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void setEditProfileButtonOnClickListener() {
-        editProfileButton.setOnClickListener(Navigation.createNavigateOnClickListener(ProfileFragmentDirections.actionProfileFragmentToEditProfileFragment()));
+        editProfileButton.setOnClickListener(Navigation.createNavigateOnClickListener(ProfileFragmentDirections.actionProfileFragmentToEditProfileFragment(userIdFromBundle)));
     }
 
     private void setBackButtonOnClickListener() {
@@ -129,7 +129,14 @@ public class ProfileFragment extends Fragment {
         userWithReviewListViewModel.getUser().observe(getViewLifecycleOwner(), user -> {
             userName.setText(String.format("%s %s", user.getFirstName(), user.getLastName()));
             email.setText(user.getEmail());
+            showAdminPanelIfOwner(userIdFromBundle);
         });
+    }
+
+    private void showAdminPanelIfOwner(String ownerId) {
+        if (Model.instance.getCurrentUserId().equals(ownerId)) {
+            editProfileButton.setVisibility(View.VISIBLE);
+        }
     }
 
     private void initializeRecycleView() {
