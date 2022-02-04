@@ -11,7 +11,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.watchnext.common.interfaces.RefreshListener;
 import com.example.watchnext.enums.LoadingStateEnum;
 import com.example.watchnext.models.entities.Review;
-import com.example.watchnext.models.entities.ReviewWithOwner;
+import com.example.watchnext.models.entities.relations.ReviewWithOwner;
 import com.example.watchnext.models.entities.User;
 import com.example.watchnext.models.firebase.AuthFirebase;
 import com.example.watchnext.models.firebase.ModelFirebase;
@@ -19,13 +19,16 @@ import com.example.watchnext.models.firebase.reviews.interfaces.AddReviewListene
 import com.example.watchnext.models.firebase.reviews.interfaces.UpdateReviewListener;
 import com.example.watchnext.models.firebase.reviews.interfaces.UploadReviewImageListener;
 import com.example.watchnext.models.firebase.users.interfaces.AddUserListener;
-import com.example.watchnext.models.firebase.users.interfaces.IsEmailExistListener;
-import com.example.watchnext.models.firebase.users.interfaces.LoginListener;
+import com.example.watchnext.models.firebase.users.interfaces.IsEmailExistOnFailureListener;
+import com.example.watchnext.models.firebase.users.interfaces.IsEmailExistOnSuccessListener;
+import com.example.watchnext.models.firebase.users.interfaces.LoginOnFailureListener;
+import com.example.watchnext.models.firebase.users.interfaces.LoginOnSuccessListener;
 import com.example.watchnext.models.firebase.users.interfaces.LogoutListener;
 import com.example.watchnext.models.firebase.users.interfaces.UpdateUserListener;
 import com.example.watchnext.models.firebase.users.interfaces.UploadUserImageListener;
 import com.example.watchnext.models.room.WatchNextLocalDb;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -40,16 +43,13 @@ public class Model {
     private final ModelFirebase modelfirebase = new ModelFirebase();
     private final AuthFirebase authFirebase = new AuthFirebase();
 
-    private final MutableLiveData<List<Review>> reviewsList = new MutableLiveData<>();
-    private final MutableLiveData<LoadingStateEnum> reviewListLoadingState = new MutableLiveData<>();
-
-    private final MutableLiveData<List<User>> usersList = new MutableLiveData<>();
-    private final MutableLiveData<LoadingStateEnum> userListLoadingState = new MutableLiveData<>();
-
     private final MutableLiveData<List<ReviewWithOwner>> reviewWithOwnerList = new MutableLiveData<>();
     private final MutableLiveData<LoadingStateEnum> reviewWithOwnerListLoadingState = new MutableLiveData<>();
 
-    private final MutableLiveData<User> currentUser = new MutableLiveData<>();
+    private final MutableLiveData<List<ReviewWithOwner>> reviewWithOwnerListByUserId = new MutableLiveData<>();
+    private final MutableLiveData<LoadingStateEnum> reviewWithOwnerListByUserIdLoadingState = new MutableLiveData<>();
+
+    private final MutableLiveData<User> profileUser = new MutableLiveData<>();
 
     private Model() {}
 
@@ -57,27 +57,12 @@ public class Model {
         return reviewWithOwnerListLoadingState;
     }
 
-    public MutableLiveData<LoadingStateEnum> getReviewListLoadingState() {
-        return reviewListLoadingState;
-    }
-
-    public MutableLiveData<LoadingStateEnum> getUserListLoadingState() {
-        return userListLoadingState;
-    }
-
-    public void refreshReviewList() {
-        refreshReviewList(() -> {});
+    public MutableLiveData<LoadingStateEnum> getReviewWithOwnerListByUserIdLoadingState() {
+        return reviewWithOwnerListByUserIdLoadingState;
     }
 
     private void refreshReviewList(RefreshListener lis) {
-        reviewListLoadingState.postValue(LoadingStateEnum.loading);
         Long lastUpdateDate = Review.getLocalLastUpdated();
-
-        executor.execute(() -> {
-            List<Review> reviewList = WatchNextLocalDb.db.reviewDao().getAll();
-            reviewsList.postValue(reviewList);
-        });
-
         modelfirebase.getAllReviews(lastUpdateDate, (reviews) -> {
             executor.execute(() -> {
                 Long lastUpdated = 0L;
@@ -91,34 +76,13 @@ public class Model {
                     }
                 }
                 Review.setLocalLastUpdated(lastUpdated);
-                List<Review> rwList = WatchNextLocalDb.db.reviewDao().getAll();
-                reviewsList.postValue(rwList);
-                reviewListLoadingState.postValue(LoadingStateEnum.loaded);
                 lis.onComplete();
             });
         });
     }
 
-    public LiveData<List<Review>> getAllReviews() {
-        if (reviewsList.getValue() == null){
-            refreshReviewList();
-        }
-        return reviewsList;
-    }
-
-    public void refreshUserList() {
-        this.refreshUserList(() -> {});
-    }
-
     private void refreshUserList(RefreshListener lis) {
-        userListLoadingState.setValue(LoadingStateEnum.loading);
-        Long lastUpdateDate = Review.getLocalLastUpdated();
-
-        executor.execute(() -> {
-            List<User> userList = WatchNextLocalDb.db.userDao().getAll();
-            usersList.postValue(userList);
-        });
-
+        Long lastUpdateDate = User.getLocalLastUpdated();
         modelfirebase.getAllUsers(lastUpdateDate, (users) -> {
             executor.execute(() -> {
                 Long lastUpdated = 0L;
@@ -128,28 +92,25 @@ public class Model {
                     }
                     WatchNextLocalDb.db.userDao().insertAll(u);
                 }
-                Review.setLocalLastUpdated(lastUpdated);
-                List<Review> rwList = WatchNextLocalDb.db.reviewDao().getAll();
-                reviewsList.postValue(rwList);
-                reviewListLoadingState.postValue(LoadingStateEnum.loaded);
+                User.setLocalLastUpdated(lastUpdated);
                 lis.onComplete();
             });
         });
     }
 
-    public LiveData<List<User>> getAllUsers() {
-        if (usersList.getValue() == null) {
-            refreshUserList();
-        }
-        return usersList;
-    }
-
     public void refreshReviewWithOwnerList() {
         reviewWithOwnerListLoadingState.setValue(LoadingStateEnum.loading);
+        executor.execute(() -> {
+            List<ReviewWithOwner> rwvList = WatchNextLocalDb.db.reviewDao().getReviewsWithOwners();
+            sortReviewWithOwnerByUpdateDate(rwvList);
+            reviewWithOwnerListByUserId.postValue(rwvList);
+        });
         refreshUserList(() -> {
             refreshReviewList(() -> {
                 executor.execute(() -> {
-                    reviewWithOwnerList.postValue(WatchNextLocalDb.db.reviewDao().getReviewsWithOwners());
+                    List<ReviewWithOwner> rwvList = WatchNextLocalDb.db.reviewDao().getReviewsWithOwners();
+                    sortReviewWithOwnerByUpdateDate(rwvList);
+                    reviewWithOwnerList.postValue(rwvList);
                     reviewWithOwnerListLoadingState.postValue(LoadingStateEnum.loaded);
                 });
             });
@@ -163,26 +124,56 @@ public class Model {
         return reviewWithOwnerList;
     }
 
-    public LiveData<Review> getReviewById(String id) {
-        MutableLiveData<Review> review = new MutableLiveData<>();
-        Model.instance.refreshReviewList();
+    public void refreshReviewWithOwnerListByUserId(String userId) {
+        reviewWithOwnerListByUserIdLoadingState.setValue(LoadingStateEnum.loading);
         executor.execute(() -> {
-            Review r = WatchNextLocalDb.db.reviewDao().getById(id);
-            review.postValue(r);
+            List<ReviewWithOwner> rwvList = WatchNextLocalDb.db.reviewDao().getReviewsWithOwnersByUserId(userId);
+            sortReviewWithOwnerByUpdateDate(rwvList);
+            reviewWithOwnerListByUserId.postValue(rwvList);
         });
-        return review;
+        refreshUserList(() -> {
+            refreshReviewList(() -> {
+                executor.execute(() -> {
+                    List<ReviewWithOwner> rwvList = WatchNextLocalDb.db.reviewDao().getReviewsWithOwnersByUserId(userId);
+                    sortReviewWithOwnerByUpdateDate(rwvList);
+                    reviewWithOwnerListByUserId.postValue(rwvList);
+                    reviewWithOwnerListByUserIdLoadingState.postValue(LoadingStateEnum.loaded);
+                });
+            });
+        });
+    }
+
+    public LiveData<List<ReviewWithOwner>> getReviewWithOwnerListByUserId(String userId) {
+        if (reviewWithOwnerListByUserId.getValue() == null) {
+            refreshReviewWithOwnerListByUserId(userId);
+        }
+        return reviewWithOwnerListByUserId;
+    }
+
+    public LiveData<User> getUserById(String id) {
+        executor.execute(() -> {
+            User user = WatchNextLocalDb.db.userDao().getById(id);
+            profileUser.postValue(user);
+        });
+        Model.instance.refreshUserList(() -> {
+            executor.execute(() -> {
+                User user = WatchNextLocalDb.db.userDao().getById(id);
+                profileUser.postValue(user);
+            });
+        });
+        return profileUser;
+    }
+
+    private void sortReviewWithOwnerByUpdateDate(List<ReviewWithOwner> reviewWithOwnerList) {
+        Collections.sort(reviewWithOwnerList, (lhs, rhs) -> rhs.review.getUpdateDate().compareTo(lhs.review.getUpdateDate()));
     }
 
     public void addReview(AddReviewListener listener, Review review) {
         modelfirebase.addReview(listener, review);
     }
 
-
-    public LiveData<User> getCurrentUser() {
-        if (currentUser.getValue() == null || !authFirebase.getCurrentUserEmail().equals(currentUser.getValue().getEmail())) {
-            modelfirebase.getUserByEmail(currentUser::postValue, authFirebase.getCurrentUserEmail());
-        }
-        return currentUser;
+    public String getCurrentUserId() {
+        return authFirebase.getCurrentUserUid();
     }
 
     public void updateUser(UpdateUserListener lis, User u) {
@@ -207,20 +198,22 @@ public class Model {
     }
 
     public void register(AddUserListener userLis, User user, String password) {
-        authFirebase.register(user.getEmail(), password);
-        modelfirebase.addUser(userLis, user);
+        authFirebase.register(user.getEmail(), password, uid -> {
+            user.setId(uid);
+            modelfirebase.addUser(userLis, user);
+        });
     }
 
     public void logout(LogoutListener lis) {
         authFirebase.logout(lis);
     }
 
-    public void login(LoginListener lis, String email, String password) {
-        authFirebase.login(lis, email, password);
+    public void login(String email, String password, LoginOnSuccessListener onSuccessListener, LoginOnFailureListener onFailureListener) {
+        authFirebase.login(email, password, onSuccessListener, onFailureListener);
     }
 
-    public void isEmailExists(String email, IsEmailExistListener lis){
-        authFirebase.isEmailExist(email, lis);
+    public void isEmailExists(String email, IsEmailExistOnSuccessListener onSuccessListener, IsEmailExistOnFailureListener onFailureListener){
+        authFirebase.isEmailExist(email, onSuccessListener, onFailureListener);
     }
 
     public boolean isSignedIn() {

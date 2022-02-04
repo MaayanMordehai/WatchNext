@@ -20,6 +20,7 @@ import com.example.watchnext.utils.CameraUtilFragment;
 import com.example.watchnext.utils.InputValidator;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -91,13 +92,17 @@ public class RegisterFragment extends CameraUtilFragment {
     }
 
     private void registerIfValid(View view) {
-        Model.instance.isEmailExists(emailEditText.getText().toString(), (emailExist) -> {
-            if (emailExist) {
-                emailTextInput.setError("This Email is already registered");
-            } else {
-                this.register(view);
-            }
-        });
+        Model.instance.isEmailExists(emailEditText.getText().toString(),
+            (emailExist) -> {
+                if (emailExist) {
+                    emailTextInput.setError("This Email is already registered");
+                } else {
+                    this.register(view);
+                }
+            },
+            (errorMessage) -> {
+                Snackbar.make(view, errorMessage, Snackbar.LENGTH_SHORT).show();
+            });
     }
 
     private void register(View view) {
