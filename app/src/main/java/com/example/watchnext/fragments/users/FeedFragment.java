@@ -29,6 +29,7 @@ import com.example.watchnext.viewmodel.ReviewWithOwnerListViewModel;
 import com.example.watchnext.viewmodel.ReviewWithOwnerSharedViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.squareup.picasso.Picasso;
 
 import java.util.Objects;
 
@@ -165,9 +166,19 @@ public class FeedFragment extends Fragment {
 
         void bind(Review review, User u) {
             reviewImageView.setImageResource(R.drawable.placeholder_review_image);
+            if (review.getImageUrl() != null) {
+                Picasso.get()
+                        .load(review.getImageUrl())
+                        .into(reviewImageView);
+            }
             reviewTitle.setText(review.getTitle());
             reviewDescription.setText(review.getDescription());
             reviewOwnerImageView.setImageResource(R.drawable.blank_profile_picture);
+            if (u.getImageUrl() != null) {
+                Picasso.get()
+                        .load(u.getImageUrl())
+                        .into(reviewOwnerImageView);
+            }
             reviewOwnerFullName.setText(String.format("%s %s", u.getFirstName(), u.getLastName()));
         }
     }
