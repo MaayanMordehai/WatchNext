@@ -4,8 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.watchnext.models.Model;
-import com.example.watchnext.models.entities.Review;
-import com.example.watchnext.models.entities.ReviewWithOwner;
+import com.example.watchnext.models.entities.relations.ReviewWithOwner;
 
 import java.util.List;
 
