@@ -6,6 +6,7 @@ import com.example.watchnext.models.entities.Review;
 import com.example.watchnext.models.firebase.reviews.ReviewModelFirebase;
 import com.example.watchnext.models.firebase.reviews.interfaces.AddReviewListener;
 import com.example.watchnext.models.firebase.reviews.interfaces.GetAllReviewsListener;
+import com.example.watchnext.models.firebase.reviews.interfaces.GetReviewListByUserIdListener;
 import com.example.watchnext.models.firebase.reviews.interfaces.GetReviewListener;
 import com.example.watchnext.models.firebase.reviews.interfaces.UpdateReviewListener;
 import com.example.watchnext.models.firebase.reviews.interfaces.UploadReviewImageListener;
@@ -46,6 +47,10 @@ public class ModelFirebase {
 
     public void getReviewById(GetReviewListener lis, String id) {
         reviewFirebase.getReviewById(lis, id);
+    }
+
+    public void getReviewListByUserId(Long since, String userId, GetReviewListByUserIdListener lis) {
+        reviewFirebase.getReviewListByUserId(since, userId, lis);
     }
 
     public void getAllUsers(Long since, GetAllUsersListener listener) {

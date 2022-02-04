@@ -12,6 +12,7 @@ import com.example.watchnext.R;
 import com.example.watchnext.models.Model;
 import com.example.watchnext.utils.InputValidator;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -56,9 +57,15 @@ public class LoginFragment extends Fragment {
             setErrorIfEmailIsInvalid();
             setErrorIfPasswordIsInvalid();
             if(isFormValid()) {
-                Model.instance.login(() -> {
-                    Navigation.findNavController(view).navigate(LoginFragmentDirections.actionLoginFragmentToUsersNavGraph());
-                }, emailEditText.getText().toString(), passwordEditText.getText().toString());
+                Model.instance.login(
+                        emailEditText.getText().toString(),
+                        passwordEditText.getText().toString(),
+                        () -> {
+                            Navigation.findNavController(view).navigate(LoginFragmentDirections.actionLoginFragmentToUsersNavGraph());
+                        },
+                        errorMessage -> {
+                            Snackbar.make(view, errorMessage, Snackbar.LENGTH_SHORT).show();
+                        });
             }
         });
     }
