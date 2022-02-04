@@ -11,7 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.navigation.Navigation;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.watchnext.R;
 import com.example.watchnext.models.Model;
@@ -20,6 +21,7 @@ import com.example.watchnext.utils.CameraUtilFragment;
 import com.example.watchnext.utils.InputValidator;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.squareup.picasso.Picasso;
@@ -34,6 +36,8 @@ public class EditProfileFragment extends CameraUtilFragment {
     private MaterialButton backButton;
     private ShapeableImageView profileImageView;
     private User currentUser;
+    private CircularProgressIndicator progressIndicator;
+    private NavController navController;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -53,6 +57,8 @@ public class EditProfileFragment extends CameraUtilFragment {
         saveButton = view.findViewById(R.id.edit_profile_fragment_save_button);
         backButton = view.findViewById(R.id.edit_profile_fragment_back_arrow_button);
         profileImageView = view.findViewById(R.id.edit_profile_fragment_profile_image_view);
+        progressIndicator = view.findViewById(R.id.edit_profile_fragment_progress_indicator);
+        navController = NavHostFragment.findNavController(this);
     }
 
     private void setListeners() {
@@ -74,6 +80,7 @@ public class EditProfileFragment extends CameraUtilFragment {
     private void initializeInputsFromUserData() {
         firstNameEditText.setText(currentUser.getFirstName());
         lastNameEditText.setText(currentUser.getLastName());
+        profileImageView.setImageResource(R.drawable.blank_profile_picture);
         if (currentUser.getImageUrl() != null) {
             Picasso.get()
                     .load(currentUser.getImageUrl())
@@ -86,24 +93,26 @@ public class EditProfileFragment extends CameraUtilFragment {
             setErrorIfFirstNameIsInvalid();
             setErrorIfLastNameIsInvalid();
             if(isFormValid()) {
-                saveProfile(view);
+                saveProfile();
             }
         });
     }
 
-    private void saveProfile(View view) {
+    private void saveProfile() {
+        saveButton.setEnabled(false);
+        progressIndicator.show();
         currentUser.setFirstName(firstNameEditText.getText().toString());
         currentUser.setLastName(lastNameEditText.getText().toString());
         Bitmap profileImage = ((BitmapDrawable)profileImageView.getDrawable()).getBitmap();
         if (profileImage == null) {
             Model.instance.updateUser(() -> {
-                Navigation.findNavController(view).navigateUp();
+                navController.navigateUp();
             }, currentUser);
         } else {
             Model.instance.uploadUserImage(profileImage, currentUser.getEmail() + ".jpg", (url) -> {
                 currentUser.setImageUrl(url);
                 Model.instance.updateUser(() -> {
-                    Navigation.findNavController(view).navigateUp();
+                    navController.navigateUp();
                 }, currentUser);
             });
         }
@@ -120,7 +129,7 @@ public class EditProfileFragment extends CameraUtilFragment {
 
     private void setBackButtonOnClickListener() {
         backButton.setOnClickListener(view -> {
-            Navigation.findNavController(view).navigateUp();
+            navController.navigateUp();
         });
     }
 

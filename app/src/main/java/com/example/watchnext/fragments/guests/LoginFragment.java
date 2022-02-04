@@ -6,12 +6,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.watchnext.R;
 import com.example.watchnext.models.Model;
 import com.example.watchnext.utils.InputValidator;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -24,6 +26,8 @@ public class LoginFragment extends Fragment {
     private TextInputEditText passwordEditText;
     private MaterialButton loginButton;
     private MaterialButton registerButton;
+    private CircularProgressIndicator progressIndicator;
+    private NavController navController;
 
     public LoginFragment() {}
 
@@ -43,6 +47,8 @@ public class LoginFragment extends Fragment {
         passwordEditText = view.findViewById(R.id.login_fragment_password_edit_text);
         loginButton = view.findViewById(R.id.login_fragment_login_button);
         registerButton = view.findViewById(R.id.login_fragment_register_button);
+        progressIndicator = view.findViewById(R.id.login_fragment_progress_indicator);
+        navController = NavHostFragment.findNavController(this);
     }
 
     private void setListeners() {
@@ -57,14 +63,20 @@ public class LoginFragment extends Fragment {
             setErrorIfEmailIsInvalid();
             setErrorIfPasswordIsInvalid();
             if(isFormValid()) {
+                loginButton.setEnabled(false);
+                registerButton.setEnabled(false);
+                progressIndicator.show();
                 Model.instance.login(
                         emailEditText.getText().toString(),
                         passwordEditText.getText().toString(),
                         () -> {
-                            Navigation.findNavController(view).navigate(LoginFragmentDirections.actionLoginFragmentToUsersNavGraph());
+                            navController.navigate(LoginFragmentDirections.actionLoginFragmentToUsersNavGraph());
                         },
                         errorMessage -> {
                             Snackbar.make(view, errorMessage, Snackbar.LENGTH_SHORT).show();
+                            loginButton.setEnabled(true);
+                            registerButton.setEnabled(true);
+                            progressIndicator.hide();
                         });
             }
         });
@@ -76,9 +88,9 @@ public class LoginFragment extends Fragment {
     }
 
     private void setRegisterButtonOnClickListener() {
-        registerButton.setOnClickListener(
-                Navigation.createNavigateOnClickListener(LoginFragmentDirections.actionLoginFragmentToRegisterFragment())
-        );
+        registerButton.setOnClickListener((View view) -> {
+                navController.navigate(LoginFragmentDirections.actionLoginFragmentToRegisterFragment());
+        });
     }
 
     private void setEmailEditTextOnKeyListener() {

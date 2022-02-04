@@ -13,7 +13,8 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.utils.widget.ImageFilterView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.Navigation;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -43,6 +44,7 @@ public class FeedFragment extends Fragment {
     private ShapeableImageView profileImageView;
     private ReviewWithOwnerListViewModel reviewWithOwnerListViewModel;
     private ReviewWithOwnerSharedViewModel reviewWithOwnerSharedViewModel;
+    private NavController navController;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -96,6 +98,7 @@ public class FeedFragment extends Fragment {
         reviewList = view.findViewById(R.id.feed_fragment_review_list_rv);
         logoutImageFilterView = view.findViewById(R.id.feed_fragment_logout_image_view);
         profileImageView = view.findViewById(R.id.feed_fragment_profile_image_view);
+        navController = NavHostFragment.findNavController(this);
         initializeRecycleView();
     }
 
@@ -110,7 +113,7 @@ public class FeedFragment extends Fragment {
     private void setOnAdapterItemClickListener() {
         reviewListAdapter.setOnItemClickListener((v, position) -> {
             reviewWithOwnerSharedViewModel.select(Objects.requireNonNull(reviewWithOwnerListViewModel.getData().getValue()).get(position));
-            Navigation.findNavController(v).navigate(FeedFragmentDirections.actionFeedFragmentToReviewDetailsFragment());
+            navController.navigate(FeedFragmentDirections.actionFeedFragmentToReviewDetailsFragment());
         });
     }
 
@@ -119,9 +122,9 @@ public class FeedFragment extends Fragment {
     }
 
     private void setOnProfileImageClickListener() {
-        profileImageView.setOnClickListener(
-                Navigation.createNavigateOnClickListener(FeedFragmentDirections.actionFeedFragmentToProfileFragment(Model.instance.getCurrentUserId()))
-        );
+        profileImageView.setOnClickListener((v) -> {
+            navController.navigate(FeedFragmentDirections.actionFeedFragmentToProfileFragment(Model.instance.getCurrentUserId()));
+        });
     }
 
     private void setOnLogoutButtonClickListener() {
@@ -139,9 +142,9 @@ public class FeedFragment extends Fragment {
     }
 
     private void setOnAddReviewActionButtonClickListener() {
-        addReviewActionButton.setOnClickListener(
-                Navigation.createNavigateOnClickListener(FeedFragmentDirections.actionFeedFragmentToAddReviewFragment())
-        );
+        addReviewActionButton.setOnClickListener((v) -> {
+            navController.navigate(FeedFragmentDirections.actionFeedFragmentToAddReviewFragment());
+        });
     }
 
     static class ReviewListViewHolder extends RecyclerView.ViewHolder {
@@ -166,20 +169,20 @@ public class FeedFragment extends Fragment {
 
         void bind(Review review, User u) {
             reviewImageView.setImageResource(R.drawable.placeholder_review_image);
+            reviewTitle.setText(review.getTitle());
+            reviewDescription.setText(review.getDescription());
+            reviewOwnerImageView.setImageResource(R.drawable.blank_profile_picture);
+            reviewOwnerFullName.setText(String.format("%s %s", u.getFirstName(), u.getLastName()));
             if (review.getImageUrl() != null) {
                 Picasso.get()
                         .load(review.getImageUrl())
                         .into(reviewImageView);
             }
-            reviewTitle.setText(review.getTitle());
-            reviewDescription.setText(review.getDescription());
-            reviewOwnerImageView.setImageResource(R.drawable.blank_profile_picture);
             if (u.getImageUrl() != null) {
                 Picasso.get()
                         .load(u.getImageUrl())
                         .into(reviewOwnerImageView);
             }
-            reviewOwnerFullName.setText(String.format("%s %s", u.getFirstName(), u.getLastName()));
         }
     }
 
