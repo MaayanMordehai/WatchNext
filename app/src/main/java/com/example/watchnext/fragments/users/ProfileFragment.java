@@ -26,6 +26,7 @@ import com.example.watchnext.viewmodel.UserWithReviewListViewModel;
 import com.example.watchnext.viewmodel.factory.UserWithReviewListByUserIdViewModelFactory;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.squareup.picasso.Picasso;
 
 import java.util.Objects;
 
@@ -129,6 +130,12 @@ public class ProfileFragment extends Fragment {
         userWithReviewListViewModel.getUser().observe(getViewLifecycleOwner(), user -> {
             userName.setText(String.format("%s %s", user.getFirstName(), user.getLastName()));
             email.setText(user.getEmail());
+            userProfileImage.setImageResource(R.drawable.blank_profile_picture);
+            if (user.getImageUrl() != null) {
+                Picasso.get()
+                        .load(user.getImageUrl())
+                        .into(userProfileImage);
+            }
             showAdminPanelIfOwner(userIdFromBundle);
         });
     }
