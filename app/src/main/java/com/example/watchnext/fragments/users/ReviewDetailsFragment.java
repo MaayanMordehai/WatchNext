@@ -16,6 +16,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.watchnext.R;
 import com.example.watchnext.models.Model;
+import com.example.watchnext.models.entities.relations.ReviewWithOwner;
 import com.example.watchnext.viewmodel.ReviewWithOwnerSharedViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.squareup.picasso.Picasso;
@@ -32,6 +33,7 @@ public class ReviewDetailsFragment extends Fragment {
     private MaterialButton editButton;
     private MaterialButton deleteButton;
     private NavController navController;
+    private ReviewWithOwner currentReviewWithOwner;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -63,11 +65,13 @@ public class ReviewDetailsFragment extends Fragment {
 
     private void setListeners() {
         setBackButtonOnClickListener();
+        setDeleteButtonOnClickListener();
         setEditButtonOnClickListener();
     }
 
     private void observeSelectedReviewWithOwner() {
         reviewWithOwnerSharedViewModel.getSelected().observe(getViewLifecycleOwner(), reviewWithOwner -> {
+            currentReviewWithOwner = reviewWithOwner;
             showAdminPanelIfOwner(reviewWithOwner.user.getId());
             titleTextView.setText(reviewWithOwner.review.getTitle());
             descriptionTextView.setText(reviewWithOwner.review.getDescription());
@@ -90,6 +94,14 @@ public class ReviewDetailsFragment extends Fragment {
     private void setBackButtonOnClickListener() {
         backButton.setOnClickListener(view -> {
             navController.navigateUp();
+        });
+    }
+
+    private void setDeleteButtonOnClickListener() {
+        deleteButton.setOnClickListener(view -> {
+            Model.instance.deleteReview(currentReviewWithOwner.review, () -> {
+                navController.navigateUp();
+            });
         });
     }
 
