@@ -56,7 +56,7 @@ public class ReviewModelFirebase {
                 .addOnFailureListener(e -> lis.onComplete());
     }
 
-    public void updateReview(UpdateReviewListener lis, Review r) {
+    public void updateReview(Review r, UpdateReviewListener lis) {
         Map<String, Object> jsonReview = r.toMap();
         db.collection(COLLECTION_NAME)
                 .document(r.getId())
