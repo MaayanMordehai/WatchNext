@@ -105,8 +105,8 @@ public class FeedFragment extends Fragment {
     }
 
     private void observeUser() {
+        profileImageView.setImageResource(R.drawable.blank_profile_picture);
         reviewWithOwnerListViewModel.getUser().observe(getViewLifecycleOwner(), user -> {
-            profileImageView.setImageResource(R.drawable.blank_profile_picture);
             if (user.getImageUrl() != null) {
                 Picasso.get()
                         .load(user.getImageUrl())
