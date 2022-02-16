@@ -12,7 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import androidx.navigation.Navigation;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.watchnext.R;
 import com.example.watchnext.models.Model;
@@ -20,6 +21,7 @@ import com.example.watchnext.models.entities.Review;
 import com.example.watchnext.utils.CameraUtilFragment;
 import com.example.watchnext.utils.InputValidator;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -32,6 +34,8 @@ public class AddReviewFragment extends CameraUtilFragment {
     private TextInputEditText descriptionEditText;
     private MaterialButton backButton;
     private MaterialButton postButton;
+    private CircularProgressIndicator progressIndicator;
+    private NavController navController;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,6 +54,8 @@ public class AddReviewFragment extends CameraUtilFragment {
         descriptionEditText = view.findViewById(R.id.add_review_fragment_description_edit_text);
         backButton = view.findViewById(R.id.add_review_fragment_back_arrow_button);
         postButton = view.findViewById(R.id.add_review_fragment_post_button);
+        progressIndicator = view.findViewById(R.id.add_review_fragment_progress_indicator);
+        navController = NavHostFragment.findNavController(this);
     }
 
     private void setListeners() {
@@ -71,19 +77,21 @@ public class AddReviewFragment extends CameraUtilFragment {
     }
 
     private void post(View view) {
+        postButton.setEnabled(false);
+        progressIndicator.show();
         Review r = new Review(titleEditText.getText().toString(), descriptionEditText.getText().toString());
         r.setOwnerId(Model.instance.getCurrentUserId());
         Bitmap reviewImage = ((BitmapDrawable)reviewImageView.getDrawable()).getBitmap();
         if (reviewImage == null) {
             Model.instance.addReview(() -> {
-                Navigation.findNavController(view).navigateUp();
+                navController.navigateUp();
             }, r);
         } else {
             // TODO: think of better name than title
             Model.instance.uploadReviewImage(reviewImage, r.getTitle() + ".jpg", (url) -> {
                 r.setImageUrl(url);
                 Model.instance.addReview(() -> {
-                    Navigation.findNavController(view).navigateUp();
+                    navController.navigateUp();
                 }, r);
             });
         }
@@ -100,7 +108,7 @@ public class AddReviewFragment extends CameraUtilFragment {
 
     private void setBackButtonOnClickListener() {
         backButton.setOnClickListener(view -> {
-            Navigation.findNavController(view).navigateUp();
+            navController.navigateUp();
         });
     }
 
