@@ -125,10 +125,6 @@ public class User {
         return updateDate;
     }
 
-    public void setUpdateDate(Long updateDate) {
-        this.updateDate = updateDate;
-    }
-
     public static void setLocalLastUpdated(Long timestamp) {
         SharedPreferences.Editor ed = ContextApplication.getContext().getSharedPreferences("TAG", Context.MODE_PRIVATE).edit();
         ed.putLong(User.LAST_UPDATED, timestamp);

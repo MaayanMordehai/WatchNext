@@ -24,9 +24,9 @@ public class IntroActivity extends AppCompatActivity {
             }
 
             if (Model.instance.isSignedIn()) {
-                startUsersActivity();
+                Model.instance.mainThread.post(this::startUsersActivity);
             } else {
-                startGuestsActivity();
+                Model.instance.mainThread.post(this::startGuestsActivity);
             }
         });
 

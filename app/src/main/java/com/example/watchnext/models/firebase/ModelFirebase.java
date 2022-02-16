@@ -3,18 +3,15 @@ package com.example.watchnext.models.firebase;
 import android.graphics.Bitmap;
 
 import com.example.watchnext.models.entities.Review;
+import com.example.watchnext.models.entities.User;
 import com.example.watchnext.models.firebase.reviews.ReviewModelFirebase;
 import com.example.watchnext.models.firebase.reviews.interfaces.AddReviewListener;
 import com.example.watchnext.models.firebase.reviews.interfaces.GetAllReviewsListener;
-import com.example.watchnext.models.firebase.reviews.interfaces.GetReviewListByUserIdListener;
-import com.example.watchnext.models.firebase.reviews.interfaces.GetReviewListener;
 import com.example.watchnext.models.firebase.reviews.interfaces.UpdateReviewListener;
 import com.example.watchnext.models.firebase.reviews.interfaces.UploadReviewImageListener;
-import com.example.watchnext.models.entities.User;
 import com.example.watchnext.models.firebase.users.UserModelFirebase;
 import com.example.watchnext.models.firebase.users.interfaces.AddUserListener;
 import com.example.watchnext.models.firebase.users.interfaces.GetAllUsersListener;
-import com.example.watchnext.models.firebase.users.interfaces.GetUserListener;
 import com.example.watchnext.models.firebase.users.interfaces.UpdateUserListener;
 import com.example.watchnext.models.firebase.users.interfaces.UploadUserImageListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -45,24 +42,12 @@ public class ModelFirebase {
         reviewFirebase.updateReview(r, lis);
     }
 
-    public void getReviewById(GetReviewListener lis, String id) {
-        reviewFirebase.getReviewById(lis, id);
-    }
-
-    public void getReviewListByUserId(Long since, String userId, GetReviewListByUserIdListener lis) {
-        reviewFirebase.getReviewListByUserId(since, userId, lis);
-    }
-
     public void getAllUsers(Long since, GetAllUsersListener listener) {
         userFirebase.getAllUsers(since, listener);
     }
 
     public void addUser(AddUserListener lis, User u) {
         userFirebase.addUser(lis, u);
-    }
-
-    public void getUserByEmail(GetUserListener lis, String id) {
-        userFirebase.getUserByEmail(lis, id);
     }
 
     public void uploadUserImage(Bitmap imageBmp, String name, UploadUserImageListener listener) {
