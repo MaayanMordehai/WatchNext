@@ -32,7 +32,6 @@ public class ReviewDetailsFragment extends Fragment {
     private MaterialButton editButton;
     private MaterialButton deleteButton;
     private NavController navController;
-    private String reviewId;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -69,7 +68,6 @@ public class ReviewDetailsFragment extends Fragment {
 
     private void observeSelectedReviewWithOwner() {
         reviewWithOwnerSharedViewModel.getSelected().observe(getViewLifecycleOwner(), reviewWithOwner -> {
-            reviewId = reviewWithOwner.review.getId();
             showAdminPanelIfOwner(reviewWithOwner.user.getId());
             titleTextView.setText(reviewWithOwner.review.getTitle());
             descriptionTextView.setText(reviewWithOwner.review.getDescription());
