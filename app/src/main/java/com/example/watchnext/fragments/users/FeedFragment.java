@@ -28,6 +28,7 @@ import com.example.watchnext.models.entities.Review;
 import com.example.watchnext.models.entities.User;
 import com.example.watchnext.viewmodel.ReviewWithOwnerListViewModel;
 import com.example.watchnext.viewmodel.ReviewWithOwnerSharedViewModel;
+import com.example.watchnext.viewmodel.factory.ReviewWithOwnerListViewModelFactory;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.squareup.picasso.Picasso;
@@ -49,7 +50,7 @@ public class FeedFragment extends Fragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        reviewWithOwnerListViewModel = new ViewModelProvider(this).get(ReviewWithOwnerListViewModel.class);
+        reviewWithOwnerListViewModel = new ViewModelProvider(this, new ReviewWithOwnerListViewModelFactory(Model.instance.getCurrentUserId())).get(ReviewWithOwnerListViewModel.class);
         reviewWithOwnerSharedViewModel = new ViewModelProvider(requireActivity()).get(ReviewWithOwnerSharedViewModel.class);
     }
 
@@ -67,6 +68,7 @@ public class FeedFragment extends Fragment {
         setListeners();
         handleRefreshingState();
         observeReviewWithOwnerList();
+        observeUser();
         return view;
     }
 
@@ -100,6 +102,17 @@ public class FeedFragment extends Fragment {
         profileImageView = view.findViewById(R.id.feed_fragment_profile_image_view);
         navController = NavHostFragment.findNavController(this);
         initializeRecycleView();
+    }
+
+    private void observeUser() {
+        profileImageView.setImageResource(R.drawable.blank_profile_picture);
+        reviewWithOwnerListViewModel.getUser().observe(getViewLifecycleOwner(), user -> {
+            if (user.getImageUrl() != null) {
+                Picasso.get()
+                        .load(user.getImageUrl())
+                        .into(profileImageView);
+            }
+        });
     }
 
     private void setListeners() {
