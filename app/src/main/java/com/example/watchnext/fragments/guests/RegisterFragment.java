@@ -11,7 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.navigation.Navigation;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.watchnext.R;
 import com.example.watchnext.models.Model;
@@ -20,6 +21,7 @@ import com.example.watchnext.utils.CameraUtilFragment;
 import com.example.watchnext.utils.InputValidator;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -39,6 +41,8 @@ public class RegisterFragment extends CameraUtilFragment {
     private MaterialButton registerButton;
     private MaterialButton backButton;
     private ShapeableImageView profileImageView;
+    private CircularProgressIndicator progressIndicator;
+    private NavController navController;
 
     public RegisterFragment() {}
 
@@ -65,6 +69,8 @@ public class RegisterFragment extends CameraUtilFragment {
         registerButton = view.findViewById(R.id.register_fragment_register_button);
         backButton = view.findViewById(R.id.register_fragment_back_arrow_button);
         profileImageView = view.findViewById(R.id.register_fragment_profile_image_view);
+        progressIndicator = view.findViewById(R.id.register_fragment_progress_indicator);
+        navController = NavHostFragment.findNavController(this);
     }
 
     private void setListeners() {
@@ -106,26 +112,24 @@ public class RegisterFragment extends CameraUtilFragment {
     }
 
     private void register(View view) {
+        registerButton.setEnabled(false);
+        progressIndicator.show();
         User u = new User(firstNameEditText.getText().toString(),
                 lastNameEditText.getText().toString(),
                 emailEditText.getText().toString());
         Bitmap profileImage = ((BitmapDrawable)profileImageView.getDrawable()).getBitmap();
         if (profileImage == null) {
-            Model.instance.register(() -> {
-                navigateToLoginAfterRegister(view);
-            }, u, passwordEditText.getText().toString());
+            Model.instance.register(this::navigateToFeedAfterRegister, u, passwordEditText.getText().toString());
         } else {
             Model.instance.uploadUserImage(profileImage, u.getEmail() + ".jpg", (url) -> {
                 u.setImageUrl(url);
-                Model.instance.register(() -> {
-                    navigateToLoginAfterRegister(view);
-                }, u, passwordEditText.getText().toString());
+                Model.instance.register(this::navigateToFeedAfterRegister, u, passwordEditText.getText().toString());
             });
         }
     }
 
-    private void navigateToLoginAfterRegister(View view) {
-        Navigation.findNavController(view).navigate(RegisterFragmentDirections.actionRegisterFragmentToLoginFragment());
+    private void navigateToFeedAfterRegister() {
+        navController.navigate(RegisterFragmentDirections.actionRegisterFragmentToUsersNavGraph());
     }
 
     private boolean isFormValid() {
@@ -142,7 +146,7 @@ public class RegisterFragment extends CameraUtilFragment {
 
     private void setBackButtonOnClickListener() {
         backButton.setOnClickListener(view -> {
-            Navigation.findNavController(view).navigate(RegisterFragmentDirections.actionRegisterFragmentToLoginFragment());
+            navController.navigate(RegisterFragmentDirections.actionRegisterFragmentToLoginFragment());
         });
     }
 

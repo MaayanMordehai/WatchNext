@@ -2,18 +2,17 @@ package com.example.watchnext.fragments.users;
 
 import android.content.Context;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.Navigation;
-
 import android.view.LayoutInflater;
-import android.view.PointerIcon;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.watchnext.R;
 import com.example.watchnext.models.Model;
@@ -32,6 +31,7 @@ public class ReviewDetailsFragment extends Fragment {
     private ImageView ownerImageView;
     private MaterialButton editButton;
     private MaterialButton deleteButton;
+    private NavController navController;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -58,6 +58,7 @@ public class ReviewDetailsFragment extends Fragment {
         ownerImageView = view.findViewById(R.id.review_details_fragment_owner_imageview);
         editButton = view.findViewById(R.id.review_details_fragment_edit_button);
         deleteButton = view.findViewById(R.id.review_details_fragment_delete_button);
+        navController = NavHostFragment.findNavController(this);
     }
 
     private void setListeners() {
@@ -70,6 +71,8 @@ public class ReviewDetailsFragment extends Fragment {
             titleTextView.setText(reviewWithOwner.review.getTitle());
             descriptionTextView.setText(reviewWithOwner.review.getDescription());
             ownerTextView.setText(String.format("%s %s", reviewWithOwner.user.getFirstName(), reviewWithOwner.user.getLastName()));
+            reviewImageView.setImageResource(R.drawable.placeholder_review_image);
+            ownerImageView.setImageResource(R.drawable.blank_profile_picture);
             if (reviewWithOwner.review.getImageUrl() != null) {
                 Picasso.get()
                         .load(reviewWithOwner.review.getImageUrl())
@@ -85,7 +88,7 @@ public class ReviewDetailsFragment extends Fragment {
 
     private void setBackButtonOnClickListener() {
         backButton.setOnClickListener(view -> {
-            Navigation.findNavController(view).navigateUp();
+            navController.navigateUp();
         });
     }
 

@@ -11,7 +11,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.Navigation;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -42,6 +43,7 @@ public class ProfileFragment extends Fragment {
     private MaterialButton editProfileButton;
     private UserWithReviewListViewModel userWithReviewListViewModel;
     private ReviewWithOwnerSharedViewModel reviewWithOwnerSharedViewModel;
+    private NavController navController;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -77,6 +79,7 @@ public class ProfileFragment extends Fragment {
         profileReviewList = view.findViewById(R.id.profile_fragment_review_list_rv);
         swipeRefresh = view.findViewById(R.id.profile_fragment_my_posts_swiperefresh);
         editProfileButton = view.findViewById(R.id.profile_fragment_edit_profile_button);
+        navController = NavHostFragment.findNavController(this);
         initializeRecycleView();
     }
 
@@ -90,7 +93,7 @@ public class ProfileFragment extends Fragment {
     private void setOnAdapterItemClickListener() {
         profileReviewListAdapter.setOnItemClickListener((v, position) -> {
             reviewWithOwnerSharedViewModel.select(Objects.requireNonNull(userWithReviewListViewModel.getReviewList().getValue()).get(position));
-            Navigation.findNavController(v).navigate(ProfileFragmentDirections.actionProfileFragmentToReviewDetailsFragment());
+            navController.navigate(ProfileFragmentDirections.actionProfileFragmentToReviewDetailsFragment());
         });
     }
 
@@ -101,12 +104,14 @@ public class ProfileFragment extends Fragment {
     }
 
     private void setEditProfileButtonOnClickListener() {
-        editProfileButton.setOnClickListener(Navigation.createNavigateOnClickListener(ProfileFragmentDirections.actionProfileFragmentToEditProfileFragment(userIdFromBundle)));
+        editProfileButton.setOnClickListener((v) -> {
+            navController.navigate(ProfileFragmentDirections.actionProfileFragmentToEditProfileFragment(userIdFromBundle));
+        });
     }
 
     private void setBackButtonOnClickListener() {
         backButton.setOnClickListener(view -> {
-            Navigation.findNavController(view).navigateUp();
+            navController.navigateUp();
         });
     }
 
