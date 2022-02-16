@@ -156,7 +156,7 @@ public class FeedFragment extends Fragment {
 
     private void setOnAddReviewActionButtonClickListener() {
         addReviewActionButton.setOnClickListener((v) -> {
-            navController.navigate(FeedFragmentDirections.actionFeedFragmentToAddReviewFragment());
+            navController.navigate(FeedFragmentDirections.actionFeedFragmentToAddReviewFragment(false));
         });
     }
 

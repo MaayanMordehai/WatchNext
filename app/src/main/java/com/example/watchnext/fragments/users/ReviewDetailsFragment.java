@@ -66,6 +66,7 @@ public class ReviewDetailsFragment extends Fragment {
     private void setListeners() {
         setBackButtonOnClickListener();
         setDeleteButtonOnClickListener();
+        setEditButtonOnClickListener();
     }
 
     private void observeSelectedReviewWithOwner() {
@@ -98,9 +99,15 @@ public class ReviewDetailsFragment extends Fragment {
 
     private void setDeleteButtonOnClickListener() {
         deleteButton.setOnClickListener(view -> {
-            Model.instance.deleteReview(() -> {
+            Model.instance.deleteReview(currentReviewWithOwner.review, () -> {
                 navController.navigateUp();
-            }, currentReviewWithOwner.review);
+            });
+        });
+    }
+
+    private void setEditButtonOnClickListener() {
+        editButton.setOnClickListener(view -> {
+            navController.navigate(ReviewDetailsFragmentDirections.actionReviewDetailsFragmentToAddReviewFragment(true));
         });
     }
 
