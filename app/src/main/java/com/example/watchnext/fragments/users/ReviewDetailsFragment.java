@@ -63,6 +63,7 @@ public class ReviewDetailsFragment extends Fragment {
 
     private void setListeners() {
         setBackButtonOnClickListener();
+        setEditButtonOnClickListener();
     }
 
     private void observeSelectedReviewWithOwner() {
@@ -89,6 +90,12 @@ public class ReviewDetailsFragment extends Fragment {
     private void setBackButtonOnClickListener() {
         backButton.setOnClickListener(view -> {
             navController.navigateUp();
+        });
+    }
+
+    private void setEditButtonOnClickListener() {
+        editButton.setOnClickListener(view -> {
+            navController.navigate(ReviewDetailsFragmentDirections.actionReviewDetailsFragmentToAddReviewFragment(true));
         });
     }
 

@@ -180,13 +180,13 @@ public class Model {
         modelfirebase.updateUser(lis, u);
     }
 
-    public void updateReview(UpdateReviewListener lis, Review r) {
-        modelfirebase.updateReview(lis, r);
+    public void updateReview(Review r, UpdateReviewListener lis) {
+        modelfirebase.updateReview(r, lis);
     }
 
-    public void deleteReview(UpdateReviewListener lis, Review r) {
+    public void deleteReview(Review r, UpdateReviewListener lis) {
         r.setDeleted(true);
-        modelfirebase.updateReview(lis, r);
+        modelfirebase.updateReview(r, lis);
     }
 
     public void uploadReviewImage(Bitmap imageBmp, String name, UploadReviewImageListener listener) {

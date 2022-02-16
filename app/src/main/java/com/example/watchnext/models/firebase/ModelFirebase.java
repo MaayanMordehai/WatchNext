@@ -41,8 +41,8 @@ public class ModelFirebase {
         reviewFirebase.addReview(lis, r);
     }
 
-    public void updateReview(UpdateReviewListener lis, Review r) {
-        reviewFirebase.updateReview(lis, r);
+    public void updateReview(Review r, UpdateReviewListener lis) {
+        reviewFirebase.updateReview(r, lis);
     }
 
     public void getReviewById(GetReviewListener lis, String id) {
