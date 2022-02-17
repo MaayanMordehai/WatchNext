@@ -49,7 +49,7 @@ public class FeedFragment extends Fragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        reviewWithOwnerListViewModel = new ViewModelProvider(requireActivity()).get(ReviewWithOwnerListViewModel.class);
+        reviewWithOwnerListViewModel = new ViewModelProvider(this).get(ReviewWithOwnerListViewModel.class);
         reviewWithOwnerSharedViewModel = new ViewModelProvider(requireActivity()).get(ReviewWithOwnerSharedViewModel.class);
     }
 
