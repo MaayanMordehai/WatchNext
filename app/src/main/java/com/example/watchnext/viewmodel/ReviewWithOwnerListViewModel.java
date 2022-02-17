@@ -14,9 +14,9 @@ public class ReviewWithOwnerListViewModel extends ViewModel {
     private final LiveData<User> user;
     private final LiveData<List<ReviewWithOwner>> reviewsWithOwner;
 
-    public ReviewWithOwnerListViewModel(String userId) {
+    public ReviewWithOwnerListViewModel() {
         reviewsWithOwner = Model.instance.getAllReviewsWithOwner();
-        user = Model.instance.getUserById(userId);
+        user = Model.instance.getUserById(Model.instance.getCurrentUserId());
     }
 
     public LiveData<List<ReviewWithOwner>> getData() {

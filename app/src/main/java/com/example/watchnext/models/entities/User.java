@@ -41,7 +41,7 @@ public class User {
         this.imageUrl = null;
     }
 
-    public User(String id,
+    public User(@NonNull String id,
                 String firstName,
                 String lastName,
                 String email,

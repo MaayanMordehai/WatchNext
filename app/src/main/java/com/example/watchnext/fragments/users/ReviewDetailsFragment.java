@@ -71,22 +71,24 @@ public class ReviewDetailsFragment extends Fragment {
 
     private void observeSelectedReviewWithOwner() {
         reviewWithOwnerSharedViewModel.getSelected().observe(getViewLifecycleOwner(), reviewWithOwner -> {
-            currentReviewWithOwner = reviewWithOwner;
-            showAdminPanelIfOwner(reviewWithOwner.user.getId());
-            titleTextView.setText(reviewWithOwner.review.getTitle());
-            descriptionTextView.setText(reviewWithOwner.review.getDescription());
-            ownerTextView.setText(String.format("%s %s", reviewWithOwner.user.getFirstName(), reviewWithOwner.user.getLastName()));
-            reviewImageView.setImageResource(R.drawable.placeholder_review_image);
-            ownerImageView.setImageResource(R.drawable.blank_profile_picture);
-            if (reviewWithOwner.review.getImageUrl() != null) {
-                Picasso.get()
-                        .load(reviewWithOwner.review.getImageUrl())
-                        .into(reviewImageView);
-            }
-            if (reviewWithOwner.user.getImageUrl() != null) {
-                Picasso.get()
-                        .load(reviewWithOwner.user.getImageUrl())
-                        .into(ownerImageView);
+            if (reviewWithOwner != null) {
+                currentReviewWithOwner = reviewWithOwner;
+                showAdminPanelIfOwner(reviewWithOwner.user.getId());
+                titleTextView.setText(reviewWithOwner.review.getTitle());
+                descriptionTextView.setText(reviewWithOwner.review.getDescription());
+                ownerTextView.setText(String.format("%s %s", reviewWithOwner.user.getFirstName(), reviewWithOwner.user.getLastName()));
+                reviewImageView.setImageResource(R.drawable.placeholder_review_image);
+                ownerImageView.setImageResource(R.drawable.blank_profile_picture);
+                if (reviewWithOwner.review.getImageUrl() != null) {
+                    Picasso.get()
+                            .load(reviewWithOwner.review.getImageUrl())
+                            .into(reviewImageView);
+                }
+                if (reviewWithOwner.user.getImageUrl() != null) {
+                    Picasso.get()
+                            .load(reviewWithOwner.user.getImageUrl())
+                            .into(ownerImageView);
+                }
             }
         });
     }

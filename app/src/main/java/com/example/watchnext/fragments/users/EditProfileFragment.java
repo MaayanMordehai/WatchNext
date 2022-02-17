@@ -72,8 +72,10 @@ public class EditProfileFragment extends CameraUtilFragment {
     private void observeUser() {
         String userIdFromBundle = EditProfileFragmentArgs.fromBundle(getArguments()).getUserId();
         Model.instance.getUserById(userIdFromBundle).observe(getViewLifecycleOwner(), user -> {
-            currentUser = user;
-            initializeInputsFromUserData();
+            if (user != null) {
+                currentUser = user;
+                initializeInputsFromUserData();
+            }
         });
     }
 

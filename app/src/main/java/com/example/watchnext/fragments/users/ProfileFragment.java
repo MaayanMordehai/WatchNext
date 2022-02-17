@@ -134,14 +134,16 @@ public class ProfileFragment extends Fragment {
     private void observeUser() {
         userProfileImage.setImageResource(R.drawable.blank_profile_picture);
         userWithReviewListViewModel.getUser().observe(getViewLifecycleOwner(), user -> {
-            userName.setText(String.format("%s %s", user.getFirstName(), user.getLastName()));
-            email.setText(user.getEmail());
-            if (user.getImageUrl() != null) {
-                Picasso.get()
-                        .load(user.getImageUrl())
-                        .into(userProfileImage);
+            if (user != null) {
+                userName.setText(String.format("%s %s", user.getFirstName(), user.getLastName()));
+                email.setText(user.getEmail());
+                if (user.getImageUrl() != null) {
+                    Picasso.get()
+                            .load(user.getImageUrl())
+                            .into(userProfileImage);
+                }
+                showAdminPanelIfOwner(userIdFromBundle);
             }
-            showAdminPanelIfOwner(userIdFromBundle);
         });
     }
 

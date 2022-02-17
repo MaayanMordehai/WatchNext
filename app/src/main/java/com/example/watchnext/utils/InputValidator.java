@@ -40,7 +40,6 @@ public class InputValidator {
 
     public static boolean isPasswordMatches(@Nullable Editable password, @Nullable Editable confirmPassword) {
         return (password != null &&
-                confirmPassword != null &&
                 isPasswordValid(confirmPassword) &&
                 password.toString().equals(confirmPassword.toString()));
     }
