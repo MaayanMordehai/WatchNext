@@ -5,8 +5,6 @@ import android.graphics.Bitmap;
 import com.example.watchnext.models.entities.Review;
 import com.example.watchnext.models.firebase.reviews.interfaces.AddReviewListener;
 import com.example.watchnext.models.firebase.reviews.interfaces.GetAllReviewsListener;
-import com.example.watchnext.models.firebase.reviews.interfaces.GetReviewListByUserIdListener;
-import com.example.watchnext.models.firebase.reviews.interfaces.GetReviewListener;
 import com.example.watchnext.models.firebase.reviews.interfaces.UpdateReviewListener;
 import com.example.watchnext.models.firebase.reviews.interfaces.UploadReviewImageListener;
 import com.google.firebase.Timestamp;
@@ -63,37 +61,6 @@ public class ReviewModelFirebase {
                 .update(jsonReview)
                 .addOnSuccessListener(unused -> lis.onComplete())
                 .addOnFailureListener(e -> lis.onComplete());
-    }
-
-    public void getReviewById(GetReviewListener lis, String id) {
-        db.collection(COLLECTION_NAME)
-                .document(id)
-                .get()
-                .addOnCompleteListener(task -> {
-                    Review r = null;
-                    if ((task.isSuccessful()) &&
-                        (task.getResult() != null) &&
-                        (task.getResult().getData() != null)) {
-                        r = Review.create(task.getResult().getData(), task.getResult().getId());
-                    }
-                    lis.onComplete(r);
-                });
-    }
-
-    public void getReviewListByUserId(Long since, String userId, GetReviewListByUserIdListener lis) {
-        db.collection(COLLECTION_NAME)
-                .whereEqualTo("ownerId", userId)
-                .whereGreaterThanOrEqualTo(Review.UPDATE_FIELD, new Timestamp(since, 0))
-                .get()
-                .addOnCompleteListener(task -> {
-                    List<Review> list = new ArrayList<>();
-                    if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot doc : task.getResult()) {
-                            list.add(Review.create(doc.getData(), doc.getId()));
-                        }
-                    }
-                    lis.onComplete(list);
-                });
     }
 
     public void uploadReviewImage(Bitmap imageBmp, String name, UploadReviewImageListener listener) {

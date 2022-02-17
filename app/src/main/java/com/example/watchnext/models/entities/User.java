@@ -41,7 +41,7 @@ public class User {
         this.imageUrl = null;
     }
 
-    public User(String id,
+    public User(@NonNull String id,
                 String firstName,
                 String lastName,
                 String email,
@@ -123,10 +123,6 @@ public class User {
 
     public Long getUpdateDate() {
         return updateDate;
-    }
-
-    public void setUpdateDate(Long updateDate) {
-        this.updateDate = updateDate;
     }
 
     public static void setLocalLastUpdated(Long timestamp) {

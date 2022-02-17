@@ -129,11 +129,6 @@ public class Review {
         return updateDate;
     }
 
-    public void setUpdateDate(Long updateDate) {
-        this.updateDate = updateDate;
-    }
-
-
     public String getOwnerId() {
         return ownerId;
     }
