@@ -19,6 +19,7 @@ import com.example.watchnext.models.Model;
 import com.example.watchnext.models.entities.relations.ReviewWithOwner;
 import com.example.watchnext.viewmodel.ReviewWithOwnerSharedViewModel;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.squareup.picasso.Picasso;
 
 public class ReviewDetailsFragment extends Fragment {
@@ -34,6 +35,7 @@ public class ReviewDetailsFragment extends Fragment {
     private MaterialButton deleteButton;
     private NavController navController;
     private ReviewWithOwner currentReviewWithOwner;
+    private CircularProgressIndicator progressIndicator;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -60,6 +62,7 @@ public class ReviewDetailsFragment extends Fragment {
         ownerImageView = view.findViewById(R.id.review_details_fragment_owner_imageview);
         editButton = view.findViewById(R.id.review_details_fragment_edit_button);
         deleteButton = view.findViewById(R.id.review_details_fragment_delete_button);
+        progressIndicator = view.findViewById(R.id.review_details_fragment_progress_indicator);
         navController = NavHostFragment.findNavController(this);
     }
 
@@ -101,6 +104,9 @@ public class ReviewDetailsFragment extends Fragment {
 
     private void setDeleteButtonOnClickListener() {
         deleteButton.setOnClickListener(view -> {
+            progressIndicator.show();
+            editButton.setEnabled(false);
+            deleteButton.setEnabled(false);
             Model.instance.deleteReview(currentReviewWithOwner.review, () -> {
                 navController.navigateUp();
             });
