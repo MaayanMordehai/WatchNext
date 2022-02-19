@@ -20,7 +20,7 @@
             android:id="@+id/profile_review_list_row_card_imageview"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:alpha="0.15"
+            android:alpha="0.20"
             android:scaleType="centerCrop"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
